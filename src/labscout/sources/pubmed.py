@@ -40,32 +40,47 @@ def _term(query: str, start: int | None, end: int | None) -> str:
     return query
 
 
-def _esearch(http: Http, term: str, retmax: int) -> tuple[int, list[str]]:
+SORT = {"relevance": "relevance", "newest": "pub_date"}  # PubMed's "Best Match", or publication date
+
+
+def _esearch(http: Http, term: str, retmax: int, sort: str = "newest") -> tuple[int, list[str], str]:
+    """The number of hits, the first ids, and how PubMed read the search (its query translation)."""
     data = http.get_json(
-        f"{BASE}/esearch.fcgi", _params(http, term=term, retmode="json", retmax=retmax, sort="pub_date")
+        f"{BASE}/esearch.fcgi", _params(http, term=term, retmode="json", retmax=retmax, sort=SORT[sort])
     )
     res = data.get("esearchresult", {})
     if "ERROR" in res:
         raise SearchError(f"PubMed did not accept the search: {res['ERROR']}")
-    return int(res.get("count", 0)), list(res.get("idlist", []))
+    return int(res.get("count", 0)), list(res.get("idlist", [])), res.get("querytranslation", "")
 
 
 def count(http: Http, query: str, start: int | None = None, end: int | None = None) -> int:
     return _esearch(http, _term(query, start, end), 0)[0]
 
 
-def search_ids(http: Http, query: str, start: int | None = None, end: int | None = None, limit: int = 300) -> list[str]:
-    """PubMed ids for the search, newest first, at most `limit`. Searches over 9,999 hits are split year by year."""
-    total, ids = _esearch(http, _term(query, start, end), min(limit, ESEARCH_CAP))
+def search_ids(
+    http: Http,
+    query: str,
+    start: int | None = None,
+    end: int | None = None,
+    limit: int = 300,
+    sort: str = "newest",
+    info: dict[str, object] | None = None,
+) -> list[str]:
+    """PubMed ids for the search, most relevant or newest first, at most `limit`; `info` receives the number of hits
+    ("total") and PubMed's reading of the search ("translation"). Over 9,999 ids are collected year by year."""
+    total, ids, translation = _esearch(http, _term(query, start, end), min(limit, ESEARCH_CAP), sort)
+    if info is not None:
+        info.update(total=total, translation=translation)
     if total <= ESEARCH_CAP or len(ids) >= limit:
         return ids[:limit]
     ids = []
     year = end or date.today().year
     first = start or 1800
     while year >= first and len(ids) < limit:
-        n, chunk = _esearch(http, _term(query, year, year), min(limit - len(ids), ESEARCH_CAP))
+        n, chunk, _ = _esearch(http, _term(query, year, year), min(limit - len(ids), ESEARCH_CAP), sort)
         if n > ESEARCH_CAP:
-            log.warning("PubMed has %s records for %s alone; only the newest %s are used", n, year, ESEARCH_CAP)
+            log.warning("PubMed has %s records for %s alone; only the first %s are used", n, year, ESEARCH_CAP)
         ids += chunk
         year -= 1
     return ids[:limit]
@@ -80,8 +95,16 @@ def fetch(http: Http, ids: list[str], batch: int = 200) -> list[Paper]:
     return papers
 
 
-def search(http: Http, query: str, start: int | None = None, end: int | None = None, limit: int = 300) -> list[Paper]:
-    return fetch(http, search_ids(http, query, start, end, limit))
+def search(
+    http: Http,
+    query: str,
+    start: int | None = None,
+    end: int | None = None,
+    limit: int = 300,
+    sort: str = "newest",
+    info: dict[str, object] | None = None,
+) -> list[Paper]:
+    return fetch(http, search_ids(http, query, start, end, limit, sort, info))
 
 
 # ---- parsing --------------------------------------------------------------------------------------------------------

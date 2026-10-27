@@ -8,7 +8,10 @@ def test_labs_prints_and_saves_files(monkeypatch, tmp_path, capsys):
     org = Organization(name="Uni", city="Oslo", country="NO", country_name="Norway", lat=1.0, lon=2.0, match="ror")
     papers = [Paper(title="T", year=2025, authors=[Author("Nordmann", "Ola", affiliations=["x"])])]
 
-    def fake(topic, start, end, limit, sources, top=None, grants=0):
+    seen = {}
+
+    def fake(topic, start, end, limit, sources, top=None, grants=0, order="relevance"):
+        seen["order"] = order
         return Result(
             query=topic,
             start=start,
@@ -24,7 +27,8 @@ def test_labs_prints_and_saves_files(monkeypatch, tmp_path, capsys):
     assert cli.main(["labs", "sleep", "--from", "2020", "--xlsx", str(out_x), "--html", str(out_h)]) == 0
     text = capsys.readouterr().out
     assert "1 papers, 1 labs" in text and "Ola Nordmann | Uni (Oslo, Norway)" in text
-    assert out_x.exists() and out_h.exists()
+    assert out_x.exists() and out_h.exists() and seen["order"] == "relevance"
+    assert cli.main(["labs", "sleep", "--order", "newest"]) == 0 and seen["order"] == "newest"
 
 
 def test_unknown_source_is_refused(capsys):

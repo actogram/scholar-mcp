@@ -6,8 +6,13 @@ from labscout.labs import build
 from labscout.models import Author, Organization, Paper
 from labscout.pipeline import Result
 
+CALLS = []
 
-def _fake_find_labs(topic, start, end, limit, sources, top=None, grants=0):
+
+def _fake_find_labs(topic, start, end, limit, sources, top=None, grants=0, order="relevance", progress=None):
+    CALLS.append({"topic": topic, "start": start, "end": end, "order": order})
+    if progress:
+        progress("pubmed", "PubMed: 1 paper found, read the 1 most relevant")
     org = Organization(name="Uni", city="Oslo", country="NO", country_name="Norway", lat=59.9, lon=10.7, match="ror")
     papers = [
         Paper(title="Steps and sleep", year=2025, pmid="1", authors=[Author("Nordmann", "Ola", affiliations=["x"])])
@@ -20,6 +25,8 @@ def _fake_find_labs(topic, start, end, limit, sources, top=None, grants=0):
         papers=papers,
         labs=build(papers, lambda a: org),
         counts={"pubmed": 1, "papers": 1, "labs": 1},
+        found={"pubmed": 1},
+        order=order,
     )
 
 
@@ -30,6 +37,7 @@ def client(monkeypatch):
     web._results.clear()
     web._visits.clear()
     web._jobs.clear()
+    CALLS.clear()
     with TestClient(web.create_app()) as c:
         yield c
 
@@ -107,3 +115,57 @@ def test_mcp_refuses_unknown_host_names(monkeypatch):
 def test_space_host_is_allowed(monkeypatch):
     monkeypatch.setenv("SPACE_HOST", "actogram-labscout.hf.space")
     assert "actogram-labscout.hf.space" in web.mcp_security().allowed_hosts
+
+
+def test_home_page_explains_the_tool_and_starts_five_years_back(client):
+    from datetime import date
+
+    r = client.get("/")
+    since = str(date.today().year - 5)
+    assert f'name="from" min="1900" max="2100" value="{since}"' in r.text
+    assert "How it works" in r.text and "Search tips" in r.text and "<svg" in r.text
+    assert f"search?topic=actigraphy+sleep+regularity&amp;from={since}" in r.text
+    assert 'name="order" value="relevance" checked' in r.text
+    assert "default-src 'none'" in r.headers["content-security-policy"]
+
+
+def test_pages_are_compressed_but_mcp_is_not(client):
+    r = client.get("/", headers={"Accept-Encoding": "gzip"})
+    assert r.headers.get("content-encoding") == "gzip"
+    m = client.post(
+        "/mcp",
+        headers={"Accept": "application/json, text/event-stream", "Accept-Encoding": "gzip"},
+        json={"jsonrpc": "2.0", "id": 1, "method": "ping"},
+    )
+    assert m.status_code == 200 and "content-encoding" not in m.headers
+
+
+def test_get_on_mcp_is_not_offered(client):
+    r = client.get("/mcp")
+    assert r.status_code == 405 and r.headers["allow"] == "POST"
+
+
+def test_privacy_page(client):
+    r = client.get("/privacy")
+    assert r.status_code == 200 and "services@actogram.ai" in r.text and "hide your entry" in r.text
+
+
+def test_years_are_put_in_order_and_the_order_is_passed_on(client):
+    r = _search(client, topic="steps", **{"from": "2025", "to": "2021", "order": "newest"})
+    assert r.status_code == 200
+    assert CALLS[-1] == {"topic": "steps", "start": 2021, "end": 2025, "order": "newest"}
+    assert "PubMed has 1 paper for this search" in r.text and 'href="privacy"' in r.text
+
+
+def test_the_waiting_page_shows_the_steps(monkeypatch):
+    job = {"started": 0, "sources": ["pubmed", "europepmc"], "steps": {"pubmed": "PubMed: 9 papers found"}}
+    html = web._steps(job)
+    assert '<li class="now">PubMed: 9 papers found</li>' in html
+    assert '<li class="todo">Search Europe PMC</li>' in html and "Rank the labs" in html
+    job["steps"]["europepmc"] = "Searching Europe PMC"
+    assert '<li class="done">PubMed: 9 papers found</li>' in web._steps(job)
+
+
+def test_robots_keep_crawlers_away_from_searches(client):
+    r = client.get("/robots.txt")
+    assert r.status_code == 200 and "Disallow: /search" in r.text and "Disallow: /download/" in r.text

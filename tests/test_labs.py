@@ -83,3 +83,23 @@ def test_older_records_use_the_first_author_affiliation():
     papers = [_paper("Old record", 2001, [_a("First", "Ann", "syd"), _a("Senior", "Bob", "")])]
     lab = build(papers, resolve)[0]
     assert lab.lead == "Bob Senior" and lab.organization.name == "The University of Sydney"
+
+
+def test_a_common_name_elsewhere_is_not_counted_as_co_authorship():
+    papers = [
+        _paper("Lab paper", 2025, [_a("Smith", "Ann", "syd"), _a("Li", "Jing", "pitt")]),
+        # another "Li J", in Sydney: not the same person, so not a co-authored paper of the Pittsburgh lab
+        _paper("Other", 2025, [_a("Li", "Jun", "Faculty of Medicine, Sydney, Australia"), _a("Lee", "Kim", "syd")]),
+        # the same person writes the city in the affiliation: counted
+        _paper("Third", 2024, [_a("Li", "Jing", "Dept of Psychiatry, Pittsburgh, PA, USA"), _a("Lee", "Kim", "syd")]),
+    ]
+    li = next(lab for lab in build(papers, resolve) if lab.last_name == "Li")
+    assert li.senior_papers == 1 and li.other_papers == 1
+
+
+def test_the_same_orcid_in_two_cities_is_one_lab():
+    a = Author("Lopez", "Jose", initials="J", orcid="0000-0001-2345-6789", affiliations=["pitt"])
+    b = Author("Lopez", "Jose", initials="J", orcid="0000-0001-2345-6789", affiliations=["syd"])
+    papers = [_paper("A", 2025, [_a("Kim", "Lee", ""), a]), _paper("B", 2024, [_a("Kim", "Lee", ""), b])]
+    labs = [lab for lab in build(papers, resolve) if lab.last_name == "Lopez"]
+    assert len(labs) == 1 and labs[0].senior_papers == 2 and labs[0].organization.name == "University of Pittsburgh"

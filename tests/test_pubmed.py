@@ -51,3 +51,16 @@ def test_large_searches_are_split_by_year():
     years = [c[2]["term"] for c in http.calls[1:]]
     assert years[0].endswith("(2025:2025[dp])") and years[-1].endswith("(2020:2020[dp])")
     assert ids[:2] == ["20250", "20251"]
+
+
+def test_most_relevant_first_and_what_pubmed_found():
+    def esearch(url, params):
+        return {"esearchresult": {"count": "4321", "idlist": ["1"], "querytranslation": '"sleep"[MeSH Terms]'}}
+
+    http = FakeHttp({"esearch.fcgi": esearch})
+    info = {}
+    assert pubmed.search_ids(http, "sleep", 2021, None, limit=1, sort="relevance", info=info) == ["1"]
+    assert http.calls[0][2]["sort"] == "relevance"
+    assert info == {"total": 4321, "translation": '"sleep"[MeSH Terms]'}
+    pubmed.search_ids(http, "sleep", limit=1)
+    assert http.calls[1][2]["sort"] == "pub_date"  # newest first is still the default of the source itself

@@ -15,8 +15,9 @@ from mcp.types import ToolAnnotations
 
 from . import __version__
 from .config import REPO
+from .errors import SearchError
 from .http import Http
-from .pipeline import collect, profile, split_name
+from .pipeline import ORDERS, SEARCH_SLOTS, collect, profile, split_name
 from .pipeline import find_labs as _find_labs
 from .sources import PUBLICATION_SOURCES, clinicaltrials, nih_reporter, patents, ukri
 from .text import signals_of, species_of
@@ -45,6 +46,10 @@ def _clip(n: int, low: int, high: int) -> int:
     return max(low, min(high, int(n)))
 
 
+def _order(order: str) -> str:
+    return order if order in ORDERS else "relevance"
+
+
 def _down(err: Exception) -> dict[str, Any]:
     """A source that does not answer becomes a plain message for the assistant instead of a failed call."""
     if isinstance(err, httpx.HTTPStatusError):
@@ -55,11 +60,21 @@ def _down(err: Exception) -> dict[str, Any]:
     return {"error": f"A source is not reachable right now ({type(err).__name__}). Please try again later."}
 
 
-async def _safely(fn: Any) -> dict[str, Any]:
+async def _safely(fn: Any, heavy: bool = False) -> dict[str, Any]:
+    """Run a tool in a worker thread; a heavy one waits for a free search slot, shared with the web page."""
+
+    def run() -> dict[str, Any]:
+        if not heavy:
+            return fn()
+        with SEARCH_SLOTS:
+            return fn()
+
     try:
-        return await anyio.to_thread.run_sync(fn)
+        return await anyio.to_thread.run_sync(run)
     except httpx.HTTPError as err:
         return _down(err)
+    except SearchError as err:  # a search the source cannot read: the message says what to change
+        return {"error": str(err)}
 
 
 @mcp.tool(annotations=READ)
@@ -71,13 +86,16 @@ async def find_labs(
     top: int = 20,
     sources: list[str] | None = None,
     with_grants: bool = False,
+    order: str = "relevance",
 ) -> dict[str, Any]:
     """Find the labs working on a topic: who leads them, where they are, and why each one came up.
 
     topic: search words, PubMed style ("actigraphy AND sleep regularity" works).
-    from_year, to_year: limit the publication years. max_papers: papers read per source (up to 1000).
-    top: labs returned (up to 100). sources: "pubmed", "europepmc" or both (default both).
+    from_year, to_year: limit the publication years; the last five years find the labs active now.
+    max_papers: papers read per source (up to 1000). order: "relevance" reads the most relevant papers (default),
+    "newest" the newest. top: labs returned (up to 100). sources: "pubmed", "europepmc" or both (default both).
     with_grants: also look up NIH grants for the five top labs (slower).
+    The answer says how many papers each source has for the search ("found") and how many were read ("counts").
     """
 
     def run() -> dict[str, Any]:
@@ -89,10 +107,11 @@ async def find_labs(
             _sources(sources),
             top=_clip(top, 1, 100),
             grants=5 if with_grants else 0,
+            order=_order(order),
         )
         return res.summary(top=_clip(top, 1, 100))
 
-    return await _safely(run)
+    return await _safely(run, heavy=True)
 
 
 @mcp.tool(annotations=READ)
@@ -102,16 +121,23 @@ async def search_papers(
     to_year: int | None = None,
     max_papers: int = 25,
     sources: list[str] | None = None,
+    order: str = "relevance",
 ) -> dict[str, Any]:
-    """Papers on a topic from PubMed and Europe PMC, newest first, merged across sources, with species and data
-    hints."""
+    """Papers on a topic from PubMed and Europe PMC, merged across sources, with species and data hints. order:
+    "relevance" picks the most relevant papers (default), "newest" the newest; either way they are listed newest
+    first."""
 
     def run() -> dict[str, Any]:
+        info: dict[str, Any] = {}
         with Http() as http:
-            papers, counts = collect(http, topic, from_year, to_year, _clip(max_papers, 1, 200), _sources(sources))
+            papers, counts = collect(
+                http, topic, from_year, to_year, _clip(max_papers, 1, 200), _sources(sources), _order(order), info
+            )
         papers.sort(key=lambda p: -(p.year or 0))
         return {
             "topic": topic,
+            "order": _order(order),
+            "found": info["found"],
             "counts": counts,
             "papers": [
                 p.brief()
@@ -126,7 +152,7 @@ async def search_papers(
             ],
         }
 
-    return await _safely(run)
+    return await _safely(run, heavy=True)
 
 
 @mcp.tool(annotations=READ)
@@ -134,7 +160,7 @@ async def lab_profile(name: str, topic: str = "", organization: str = "", max_pa
     """One researcher: organisations, years, frequent co-authors and topics, species, data hints, recent papers and NIH
     grants. name: "Susan Redline" or "Redline, Susan". topic and organization narrow the search when a name is
     common."""
-    return await _safely(lambda: profile(name, topic, organization, _clip(max_papers, 5, 300)))
+    return await _safely(lambda: profile(name, topic, organization, _clip(max_papers, 5, 300)), heavy=True)
 
 
 @mcp.tool(annotations=READ)
