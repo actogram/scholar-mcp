@@ -1,0 +1,489 @@
+{
+ "version": "6.9",
+ "hitCount": 150,
+ "nextCursorMark": "AoIIQNmEUyg1NDYzNDA4OA==",
+ "nextPageUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=actigraphy+sleep+regularity+older+adults+AND+PUB_YEAR%3A2025&cursorMark=AoIIQNmEUyg1NDYzNDA4OA%3D%3D&resultType=core&pageSize=3&format=json",
+ "request": {
+  "queryString": "actigraphy sleep regularity older adults AND PUB_YEAR:2025",
+  "resultType": "core",
+  "cursorMark": "*",
+  "pageSize": 3,
+  "sort": "",
+  "synonym": false
+ },
+ "resultList": {
+  "result": [
+   {
+    "id": "41341996",
+    "source": "MED",
+    "pmid": "41341996",
+    "pmcid": "PMC12670636",
+    "fullTextIdList": {
+     "fullTextId": [
+      "PMC12670636"
+     ]
+    },
+    "doi": "10.1093/sleepadvances/zpaf077",
+    "title": "Serum 25-hydroxyvitamin D concentration is associated with device-estimated sleep metrics in healthy young and early middle-aged adults.",
+    "authorString": "D'Agata MN, Hoopes EK, Keiser T, Patterson F, Brewer BC, Witman MA.",
+    "authorList": {
+     "author": [
+      {
+       "fullName": "D'Agata MN",
+       "lastName": "D'Agata",
+       "firstName": "Michele N",
+       "initials": "MN",
+       "authorId": {
+        "type": "ORCID",
+        "value": "0000-0002-6166-9627"
+       },
+       "authorAffiliationDetailsList": {
+        "authorAffiliation": [
+         {
+          "affiliation": "Department of Kinesiology and Applied Physiology, College of Health Sciences, University of Delaware, Newark, DE, United States."
+         }
+        ]
+       }
+      },
+      {
+       "fullName": "Hoopes EK",
+       "lastName": "Hoopes",
+       "firstName": "Elissa K",
+       "initials": "EK",
+       "authorId": {
+        "type": "ORCID",
+        "value": "0000-0001-6785-7007"
+       },
+       "authorAffiliationDetailsList": {
+        "authorAffiliation": [
+         {
+          "affiliation": "Department of Health Behavior and Nutrition Sciences, College of Health Sciences, University of Delaware, Newark, DE, United States."
+         }
+        ]
+       }
+      },
+      {
+       "fullName": "Keiser T",
+       "lastName": "Keiser",
+       "firstName": "Thomas",
+       "initials": "T",
+       "authorId": {
+        "type": "ORCID",
+        "value": "0000-0002-3820-8005"
+       },
+       "authorAffiliationDetailsList": {
+        "authorAffiliation": [
+         {
+          "affiliation": "Department of Health Behavior and Nutrition Sciences, College of Health Sciences, University of Delaware, Newark, DE, United States."
+         }
+        ]
+       }
+      },
+      {
+       "fullName": "Patterson F",
+       "lastName": "Patterson",
+       "firstName": "Freda",
+       "initials": "F",
+       "authorId": {
+        "type": "ORCID",
+        "value": "0000-0001-6561-3092"
+       },
+       "authorAffiliationDetailsList": {
+        "authorAffiliation": [
+         {
+          "affiliation": "Department of Health Behavior and Nutrition Sciences, College of Health Sciences, University of Delaware, Newark, DE, United States."
+         }
+        ]
+       }
+      },
+      {
+       "fullName": "Brewer BC",
+       "lastName": "Brewer",
+       "firstName": "Benjamin C",
+       "initials": "BC",
+       "authorId": {
+        "type": "ORCID",
+        "value": "0000-0002-3056-7142"
+       },
+       "authorAffiliationDetailsList": {
+        "authorAffiliation": [
+         {
+          "affiliation": "Center for Biostatistics and Health Data Science, College of Science, Virginia Polytechnic Institute and State University, Roanoke, VA, United States."
+         }
+        ]
+       }
+      },
+      {
+       "fullName": "Witman MA",
+       "lastName": "Witman",
+       "firstName": "Melissa A",
+       "initials": "MA",
+       "authorId": {
+        "type": "ORCID",
+        "value": "0000-0002-9003-8779"
+       },
+       "authorAffiliationDetailsList": {
+        "authorAffiliation": [
+         {
+          "affiliation": "Department of Kinesiology and Applied Physiology, College of Health Sciences, University of Delaware, Newark, DE, United States."
+         }
+        ]
+       }
+      }
+     ]
+    },
+    "authorIdList": {
+     "authorId": [
+      {
+       "type": "ORCID",
+       "value": "0000-0001-6561-3092"
+      },
+      {
+       "type": "ORCID",
+       "value": "0000-0001-6785-7007"
+      },
+      {
+       "type": "ORCID",
+       "value": "0000-0002-3056-7142"
+      },
+      {
+       "type": "ORCID",
+       "value": "0000-0002-3820-8005"
+      },
+      {
+       "type": "ORCID",
+       "value": "0000-0002-6166-9627"
+      },
+      {
+       "type": "ORCID",
+       "value": "0000-0002-9003-8779"
+      }
+     ]
+    },
+    "dataLinksTagsList": {
+     "dataLinkstag": [
+      "altmetrics",
+      "supporting_data"
+     ]
+    },
+    "journalInfo": {
+     "issue": "4",
+     "volume": "6",
+     "journalIssueId": 4030523,
+     "dateOfPublication": "2025 ",
+     "monthOfPublication": 0,
+     "yearOfPublication": 2025,
+     "journal": {
+      "medlineAbbreviation": "Sleep Adv",
+      "title": "Sleep advances : a journal of the Sleep Research Society",
+      "essn": "2632-5012",
+      "issn": "2632-5012",
+      "isoabbreviation": "Sleep Adv",
+      "nlmid": "101774029"
+     },
+     "printPublicationDate": "2025-01-01"
+    },
+    "pubYear": "2025",
+    "pageInfo": "zpaf077",
+    "abstractText": "<h4>Study objectives</h4>We tested associations between serum 25-hydroxyvitamin D concentration ([25(OH)D]) and device-estimated sleep metrics, including sleep duration, sleep efficiency, sleep duration regularity, sleep timing regularity, and sleep regularity index (SRI), in young and early middle-aged adults (18-45\u00a0years). We also assessed the mediating effect of nighttime melatonin (urinary 6-sulfatoxymelatonin (aMT6s) excretion) on these associations.<h4>Methods</h4>Participants (<i>n</i>\u2009=\u200979) completed 14\u00a0days of wrist actigraphy. Fasted blood sampling was performed to quantify serum [25(OH)D]. First morning void was used to quantify overnight urinary aMT6s excretion, normalized to creatinine clearance. Associations between [25(OH)D] and sleep metrics were evaluated using linear regression (model 1). Separate models adjusted for age, sex, race, and body fat % (model 2), season of testing, caffeine consumption, and education level (model 3), and device-estimated moderate-to-vigorous physical activity (model 4; <i>n</i>\u2009=\u200968).<h4>Results</h4>Serum [25(OH)D] was positively associated with sleep duration, sleep efficiency, and SRI, and negatively associated with sleep duration regularity, sleep onset timing regularity, and sleep midpoint timing regularity in model 1 (all <i>p</i>\u00a0<\u2009.03) and model 4 (all <i>p</i>\u00a0<\u2009.02). In model 2, serum [25(OH)D] remained significantly associated with sleep duration only (<i>p</i>\u00a0=\u2009.036). In model 3, serum [25(OH)D] remained significantly associated with all sleep metrics (<i>p</i>\u00a0<\u2009.02) except sleep duration regularity and SRI. Serum [25(OH)D] was not associated with aMT6s:creatinine, indicating no grounds for performing mediation analyses.<h4>Conclusions</h4>Serum [25(OH)D] is independently associated with several sleep metrics in healthy adults. However, nighttime melatonin concentration did not mediate these associations, thus other mechanistic pathways must be considered.",
+    "affiliation": "Department of Kinesiology and Applied Physiology, College of Health Sciences, University of Delaware, Newark, DE, United States.",
+    "publicationStatus": "epublish",
+    "language": "eng",
+    "pubModel": "Electronic-eCollection",
+    "pubTypeList": {
+     "pubType": [
+      "research-article",
+      "Journal Article"
+     ]
+    },
+    "grantsList": {
+     "grant": [
+      {
+       "agency": "NIGMS NIH HHS",
+       "acronym": "GM",
+       "grantId": "P20 GM113125",
+       "orderIn": 0
+      },
+      {
+       "agency": "National Institute of General Medical Sciences of the National Institutes of Health",
+       "grantId": "2P20GM113125",
+       "orderIn": 0
+      },
+      {
+       "agency": "American Heart Association",
+       "grantId": "Award #831488",
+       "orderIn": 0
+      }
+     ]
+    },
+    "keywordList": {
+     "keyword": [
+      "Melatonin",
+      "Vitamin D",
+      "Sleep",
+      "Young Adults",
+      "actigraphy"
+     ]
+    },
+    "fullTextUrlList": {
+     "fullTextUrl": [
+      {
+       "availability": "Subscription required",
+       "availabilityCode": "S",
+       "documentStyle": "doi",
+       "site": "DOI",
+       "url": "https://doi.org/10.1093/sleepadvances/zpaf077"
+      },
+      {
+       "availability": "Open access",
+       "availabilityCode": "OA",
+       "documentStyle": "html",
+       "site": "Europe_PMC",
+       "url": "https://europepmc.org/articles/PMC12670636"
+      },
+      {
+       "availability": "Open access",
+       "availabilityCode": "OA",
+       "documentStyle": "pdf",
+       "site": "Europe_PMC",
+       "url": "https://europepmc.org/articles/PMC12670636?pdf=render"
+      }
+     ]
+    },
+    "isOpenAccess": "Y",
+    "inEPMC": "Y",
+    "inPMC": "Y",
+    "citedByCount": 2,
+    "hasReferences": "Y",
+    "hasTextMinedTerms": "Y",
+    "hasDbCrossReferences": "N",
+    "hasPDF": "Y",
+    "hasBook": "N",
+    "hasSuppl": "N",
+    "hasLabsLinks": "Y",
+    "hasData": "Y",
+    "license": "cc by",
+    "authMan": "N",
+    "epmcAuthMan": "N",
+    "nihAuthMan": "N",
+    "hasTMAccessionNumbers": "Y",
+    "tmAccessionTypeList": {
+     "accessionType": [
+      "nct",
+      "doi"
+     ]
+    },
+    "dateOfCompletion": "2025-12-04",
+    "dateOfCreation": "2025-12-04",
+    "dateOfRevision": "2026-09-19",
+    "electronicPublicationDate": "2025-10-29",
+    "firstPublicationDate": "2025-10-29",
+    "firstIndexDate": "2025-12-05",
+    "fullTextReceivedDate": "2025-12-22",
+    "hasEvaluations": "N"
+   },
+   {
+    "id": "PMC12760243",
+    "source": "PMC",
+    "pmcid": "PMC12760243",
+    "fullTextIdList": {
+     "fullTextId": [
+      "PMC12760243"
+     ]
+    },
+    "title": "Longitudinal and Cross-Sectional Sex Differences in Sleep Health Across Middle and Older Adulthood",
+    "journalInfo": {
+     "issue": "Suppl 2",
+     "volume": "9",
+     "journalIssueId": 4081997,
+     "dateOfPublication": "2025 Dec",
+     "monthOfPublication": 12,
+     "yearOfPublication": 2025,
+     "journal": {
+      "medlineAbbreviation": "Innov Aging",
+      "title": "Innovation in aging",
+      "essn": "2399-5300",
+      "issn": "2399-5300",
+      "isoabbreviation": "Innov Aging",
+      "nlmid": "101703706"
+     },
+     "printPublicationDate": "2025-12-01"
+    },
+    "pubYear": "2025",
+    "language": "eng",
+    "pubModel": "Undetermined",
+    "pubTypeList": {
+     "pubType": [
+      "Abstract"
+     ]
+    },
+    "fullTextUrlList": {
+     "fullTextUrl": [
+      {
+       "availability": "Free",
+       "availabilityCode": "F",
+       "documentStyle": "html",
+       "site": "PubMedCentral",
+       "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12760243/?tool=EBI"
+      },
+      {
+       "availability": "Free",
+       "availabilityCode": "F",
+       "documentStyle": "pdf",
+       "site": "PubMedCentral",
+       "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12760243/pdf/?tool=EBI"
+      },
+      {
+       "availability": "Free",
+       "availabilityCode": "F",
+       "documentStyle": "html",
+       "site": "Europe_PMC",
+       "url": "https://europepmc.org/articles/PMC12760243"
+      },
+      {
+       "availability": "Free",
+       "availabilityCode": "F",
+       "documentStyle": "pdf",
+       "site": "Europe_PMC",
+       "url": "https://europepmc.org/articles/PMC12760243?pdf=render"
+      }
+     ]
+    },
+    "isOpenAccess": "Y",
+    "inEPMC": "Y",
+    "inPMC": "Y",
+    "citedByCount": 0,
+    "hasReferences": "N",
+    "hasTextMinedTerms": "Y",
+    "hasDbCrossReferences": "N",
+    "hasPDF": "Y",
+    "hasBook": "N",
+    "hasSuppl": "N",
+    "hasLabsLinks": "N",
+    "hasData": "N",
+    "license": "cc by",
+    "authMan": "N",
+    "epmcAuthMan": "N",
+    "nihAuthMan": "N",
+    "hasTMAccessionNumbers": "N",
+    "dateOfCreation": "2026-01-05",
+    "dateOfRevision": "2026-01-05",
+    "electronicPublicationDate": "2025-12-01",
+    "firstPublicationDate": "2025-12-01",
+    "firstIndexDate": "2026-01-05",
+    "fullTextReceivedDate": "2026-01-05",
+    "hasEvaluations": "N"
+   },
+   {
+    "id": "PMC12790418",
+    "source": "PMC",
+    "pmcid": "PMC12790418",
+    "fullTextIdList": {
+     "fullTextId": [
+      "PMC12790418"
+     ]
+    },
+    "title": "Sleep and 24\u2010hour rhythm associations with plasma markers of inflammation in aging",
+    "authorString": "Weiss S.",
+    "authorList": {
+     "author": [
+      {
+       "fullName": "Weiss S",
+       "lastName": "Weiss",
+       "firstName": "Skylar E",
+       "initials": "S",
+       "authorAffiliationDetailsList": {
+        "authorAffiliation": [
+         {
+          "affiliation": "Stanford University, Stanford, CA, USA"
+         }
+        ]
+       }
+      }
+     ]
+    },
+    "journalInfo": {
+     "issue": "Suppl 2",
+     "volume": "21",
+     "journalIssueId": 4078564,
+     "dateOfPublication": "2025 Dec",
+     "monthOfPublication": 12,
+     "yearOfPublication": 2025,
+     "journal": {
+      "medlineAbbreviation": "Alzheimers Dement",
+      "title": "Alzheimer's & dementia : the journal of the Alzheimer's Association",
+      "essn": "1552-5279",
+      "issn": "1552-5260",
+      "isoabbreviation": "Alzheimers Dement",
+      "nlmid": "101231978"
+     },
+     "printPublicationDate": "2025-12-01"
+    },
+    "pubYear": "2025",
+    "language": "eng",
+    "pubModel": "Undetermined",
+    "pubTypeList": {
+     "pubType": [
+      "Abstract"
+     ]
+    },
+    "fullTextUrlList": {
+     "fullTextUrl": [
+      {
+       "availability": "Free",
+       "availabilityCode": "F",
+       "documentStyle": "html",
+       "site": "PubMedCentral",
+       "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12790418/?tool=EBI"
+      },
+      {
+       "availability": "Free",
+       "availabilityCode": "F",
+       "documentStyle": "pdf",
+       "site": "PubMedCentral",
+       "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12790418/pdf/?tool=EBI"
+      },
+      {
+       "availability": "Free",
+       "availabilityCode": "F",
+       "documentStyle": "html",
+       "site": "Europe_PMC",
+       "url": "https://europepmc.org/articles/PMC12790418"
+      },
+      {
+       "availability": "Free",
+       "availabilityCode": "F",
+       "documentStyle": "pdf",
+       "site": "Europe_PMC",
+       "url": "https://europepmc.org/articles/PMC12790418?pdf=render"
+      }
+     ]
+    },
+    "isOpenAccess": "Y",
+    "inEPMC": "Y",
+    "inPMC": "Y",
+    "citedByCount": 0,
+    "hasReferences": "N",
+    "hasTextMinedTerms": "Y",
+    "hasDbCrossReferences": "N",
+    "hasPDF": "Y",
+    "hasBook": "N",
+    "hasSuppl": "N",
+    "hasLabsLinks": "N",
+    "hasData": "N",
+    "license": "cc by",
+    "authMan": "N",
+    "epmcAuthMan": "N",
+    "nihAuthMan": "N",
+    "hasTMAccessionNumbers": "N",
+    "dateOfCreation": "2026-01-11",
+    "dateOfRevision": "2026-08-10",
+    "electronicPublicationDate": "2025-12-01",
+    "firstPublicationDate": "2025-12-01",
+    "firstIndexDate": "2026-01-13",
+    "fullTextReceivedDate": "2026-01-11",
+    "hasEvaluations": "N"
+   }
+  ]
+ }
+}
