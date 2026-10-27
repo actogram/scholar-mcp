@@ -1,0 +1,172 @@
+{
+ "meta": {
+  "search_id": "gB7D-s2EyEW6D8oqXrHpaw",
+  "total": 11,
+  "offset": 0,
+  "limit": 3,
+  "sort_field": null,
+  "sort_order": "ASC",
+  "sorted_by_relevance": true,
+  "properties": {
+   "URL": "https:/reporter.nih.gov/search/gB7D-s2EyEW6D8oqXrHpaw/projects"
+  }
+ },
+ "results": [
+  {
+   "fiscal_year": 2026,
+   "project_num": "5U01DA059472-04",
+   "organization": {
+    "org_name": "HARVARD PILGRIM HEALTH CARE, INC.",
+    "city": null,
+    "country": null,
+    "org_city": "Canton",
+    "org_country": "UNITED STATES",
+    "org_state": "MA",
+    "org_state_name": null,
+    "dept_type": null,
+    "fips_country_code": null,
+    "org_duns": [
+     "071721088"
+    ],
+    "org_ueis": [
+     "NZVVQ8GNVX65"
+    ],
+    "primary_duns": "071721088",
+    "primary_uei": "NZVVQ8GNVX65",
+    "org_fips": "US",
+    "org_ipf_code": "444701",
+    "org_zipcode": "02021",
+    "external_org_id": 444701
+   },
+   "award_amount": 678723,
+   "principal_investigators": [
+    {
+     "profile_id": 1898064,
+     "first_name": "Susan",
+     "middle_name": "S.",
+     "last_name": "Redline",
+     "is_contact_pi": false,
+     "full_name": "Susan S. Redline",
+     "title": ""
+    },
+    {
+     "profile_id": 9798348,
+     "first_name": "Rui",
+     "middle_name": "",
+     "last_name": "Wang",
+     "is_contact_pi": true,
+     "full_name": "Rui  Wang",
+     "title": "PROFESSOR"
+    }
+   ],
+   "agency_ic_admin": {
+    "code": "DA",
+    "abbreviation": "NIDA",
+    "name": "National Institute on Drug Abuse",
+    "admin_org_id": "12500072",
+    "admin_funding_url": ""
+   },
+   "project_start_date": "2023-09-30T00:00:00",
+   "project_end_date": "2027-08-31T00:00:00",
+   "project_title": "Value of Sleep Metrics in Predicting Opioid-Use Disorder Treatment Outcomes: Leadership and Data Coordinating Center"
+  },
+  {
+   "fiscal_year": 2026,
+   "project_num": "75N92025C00005-P00001-9999-1",
+   "organization": {
+    "org_name": "BRIGHAM AND WOMEN'S HOSPITAL",
+    "city": null,
+    "country": null,
+    "org_city": "BOSTON",
+    "org_country": "UNITED STATES",
+    "org_state": "MA",
+    "org_state_name": null,
+    "dept_type": null,
+    "fips_country_code": null,
+    "org_duns": [
+     "030811269"
+    ],
+    "org_ueis": [
+     "QN6MS4VN7BD1"
+    ],
+    "primary_duns": "030811269",
+    "primary_uei": "QN6MS4VN7BD1",
+    "org_fips": "US",
+    "org_ipf_code": "1080401",
+    "org_zipcode": "021156110",
+    "external_org_id": 1080401
+   },
+   "award_amount": 1378465,
+   "principal_investigators": [
+    {
+     "profile_id": 1898064,
+     "first_name": "Susan",
+     "middle_name": "S.",
+     "last_name": "Redline",
+     "is_contact_pi": true,
+     "full_name": "Susan S. Redline",
+     "title": "PROFESSOR OF MEDICINE"
+    }
+   ],
+   "agency_ic_admin": {
+    "code": "OD",
+    "abbreviation": "OD",
+    "name": "NIH Office of the Director",
+    "admin_org_id": "12500055",
+    "admin_funding_url": ""
+   },
+   "project_start_date": "2025-03-20T00:00:00",
+   "project_end_date": "2027-03-19T00:00:00",
+   "project_title": "NATIONAL SLEEP RESEARCH RESOURCE"
+  },
+  {
+   "fiscal_year": 2026,
+   "project_num": "1R21HL186284-01",
+   "organization": {
+    "org_name": "BRIGHAM AND WOMEN'S HOSPITAL",
+    "city": null,
+    "country": null,
+    "org_city": "BOSTON",
+    "org_country": "UNITED STATES",
+    "org_state": "MA",
+    "org_state_name": null,
+    "dept_type": null,
+    "fips_country_code": null,
+    "org_duns": [
+     "030811269"
+    ],
+    "org_ueis": [
+     "QN6MS4VN7BD1"
+    ],
+    "primary_duns": "030811269",
+    "primary_uei": "QN6MS4VN7BD1",
+    "org_fips": "US",
+    "org_ipf_code": "1080401",
+    "org_zipcode": "021156110",
+    "external_org_id": 1080401
+   },
+   "award_amount": 492250,
+   "principal_investigators": [
+    {
+     "profile_id": 1898064,
+     "first_name": "Susan",
+     "middle_name": "S.",
+     "last_name": "Redline",
+     "is_contact_pi": true,
+     "full_name": "Susan S. Redline",
+     "title": "PROFESSOR OF MEDICINE"
+    }
+   ],
+   "agency_ic_admin": {
+    "code": "HL",
+    "abbreviation": "NHLBI",
+    "name": "National Heart Lung and Blood Institute",
+    "admin_org_id": "12500068",
+    "admin_funding_url": ""
+   },
+   "project_start_date": "2026-07-15T00:00:00",
+   "project_end_date": "2028-06-30T00:00:00",
+   "project_title": "Data-Driven Phenotyping of Obstructive Sleep Apnea and Sex-Specific Cardiovascular Consequences in a Multi-Modal EHR Cohort"
+  }
+ ]
+}

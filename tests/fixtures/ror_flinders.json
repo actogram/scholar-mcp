@@ -1,0 +1,363 @@
+{
+ "number_of_results": 10,
+ "items": [
+  {
+   "substring": "Flinders Health and Medical Research Institute (Sleep Health), College of Medicine and Public Health, Flinders University, Adelaide, South Australia, Australia",
+   "score": 1.0,
+   "matching_type": "SINGLE SEARCH",
+   "chosen": true,
+   "organization": {
+    "admin": {
+     "created": {
+      "date": "2018-11-14",
+      "schema_version": "1.0"
+     },
+     "last_modified": {
+      "date": "2026-08-25",
+      "schema_version": "2.1"
+     }
+    },
+    "domains": [
+     "flinders.edu.au"
+    ],
+    "established": 1966,
+    "external_ids": [
+     {
+      "all": [
+       "501100001785",
+       "501100003133"
+      ],
+      "preferred": "501100001785",
+      "type": "fundref"
+     },
+     {
+      "all": [
+       "grid.1014.4"
+      ],
+      "preferred": "grid.1014.4",
+      "type": "grid"
+     },
+     {
+      "all": [
+       "0000 0004 0367 2697"
+      ],
+      "preferred": null,
+      "type": "isni"
+     },
+     {
+      "all": [
+       "Q15575"
+      ],
+      "preferred": null,
+      "type": "wikidata"
+     }
+    ],
+    "id": "https://ror.org/01kpzv902",
+    "links": [
+     {
+      "type": "website",
+      "value": "https://www.flinders.edu.au"
+     },
+     {
+      "type": "wikipedia",
+      "value": "http://en.wikipedia.org/wiki/Flinders_University"
+     }
+    ],
+    "locations": [
+     {
+      "geonames_details": {
+       "continent_code": "OC",
+       "continent_name": "Oceania",
+       "country_code": "AU",
+       "country_name": "Australia",
+       "country_subdivision_code": "SA",
+       "country_subdivision_name": "South Australia",
+       "lat": -34.92866,
+       "lng": 138.59863,
+       "name": "Adelaide"
+      },
+      "geonames_id": 2078025
+     }
+    ],
+    "names": [
+     {
+      "lang": "en",
+      "types": [
+       "ror_display",
+       "label"
+      ],
+      "value": "Flinders University"
+     },
+     {
+      "lang": "en",
+      "types": [
+       "alias"
+      ],
+      "value": "Flinders University of South Australia"
+     }
+    ],
+    "relationships": [
+     {
+      "label": "National Centre for Groundwater Research and Training",
+      "type": "child",
+      "id": "https://ror.org/0087v5134"
+     },
+     {
+      "label": "Flinders Microscopy and Microanalysis",
+      "type": "child",
+      "id": "https://ror.org/04z91ja70"
+     },
+     {
+      "label": "Caring Futures Institute",
+      "type": "child",
+      "id": "https://ror.org/02d01az19"
+     },
+     {
+      "label": "French\u2013Australian Laboratory for Human / Autonomous Agents Teaming",
+      "type": "child",
+      "id": "https://ror.org/045j5wx38"
+     },
+     {
+      "label": "Centre for Remote Health",
+      "type": "related",
+      "id": "https://ror.org/04tn8zp39"
+     },
+     {
+      "label": "Flinders Medical Centre",
+      "type": "related",
+      "id": "https://ror.org/020aczd56"
+     },
+     {
+      "label": "Royal Darwin Hospital",
+      "type": "related",
+      "id": "https://ror.org/04jq72f57"
+     },
+     {
+      "label": "Women's and Children's Hospital",
+      "type": "related",
+      "id": "https://ror.org/03kwrfk72"
+     },
+     {
+      "label": "Centre for Social Impact",
+      "type": "related",
+      "id": "https://ror.org/04hwnke37"
+     }
+    ],
+    "status": "active",
+    "types": [
+     "education",
+     "funder"
+    ]
+   }
+  },
+  {
+   "substring": "Flinders Health and Medical Research Institute (Sleep Health), College of Medicine and Public Health, Flinders University, Adelaide, South Australia, Australia",
+   "score": 0.86,
+   "matching_type": "SINGLE SEARCH",
+   "chosen": false,
+   "organization": {
+    "admin": {
+     "created": {
+      "date": "2021-09-23",
+      "schema_version": "1.0"
+     },
+     "last_modified": {
+      "date": "2024-12-11",
+      "schema_version": "2.1"
+     }
+    },
+    "domains": [],
+    "established": 2008,
+    "external_ids": [
+     {
+      "all": [
+       "501100021332"
+      ],
+      "preferred": "501100021332",
+      "type": "fundref"
+     },
+     {
+      "all": [
+       "grid.510958.0"
+      ],
+      "preferred": "grid.510958.0",
+      "type": "grid"
+     },
+     {
+      "all": [
+       "Q17007521"
+      ],
+      "preferred": null,
+      "type": "wikidata"
+     }
+    ],
+    "id": "https://ror.org/00dt9qb91",
+    "links": [
+     {
+      "type": "website",
+      "value": "https://www.ihmri.org.au/"
+     },
+     {
+      "type": "wikipedia",
+      "value": "https://en.wikipedia.org/wiki/Illawarra_Health_%26_Medical_Research_Institute"
+     }
+    ],
+    "locations": [
+     {
+      "geonames_details": {
+       "continent_code": "OC",
+       "continent_name": "Oceania",
+       "country_code": "AU",
+       "country_name": "Australia",
+       "country_subdivision_code": "NSW",
+       "country_subdivision_name": "New South Wales",
+       "lat": -34.41667,
+       "lng": 150.86667,
+       "name": "Keiraville"
+      },
+      "geonames_id": 2161715
+     }
+    ],
+    "names": [
+     {
+      "lang": null,
+      "types": [
+       "acronym"
+      ],
+      "value": "IHMRI"
+     },
+     {
+      "lang": "en",
+      "types": [
+       "ror_display",
+       "label"
+      ],
+      "value": "Illawarra Health and Medical Research Institute"
+     }
+    ],
+    "relationships": [],
+    "status": "active",
+    "types": [
+     "facility",
+     "funder"
+    ]
+   }
+  },
+  {
+   "substring": "Flinders Health and Medical Research Institute (Sleep Health), College of Medicine and Public Health, Flinders University, Adelaide, South Australia, Australia",
+   "score": 0.86,
+   "matching_type": "SINGLE SEARCH",
+   "chosen": false,
+   "organization": {
+    "admin": {
+     "created": {
+      "date": "2025-11-21",
+      "schema_version": "2.1"
+     },
+     "last_modified": {
+      "date": "2025-11-24",
+      "schema_version": "2.1"
+     }
+    },
+    "domains": [],
+    "established": null,
+    "external_ids": [
+     {
+      "all": [
+       "501100024036"
+      ],
+      "preferred": "501100024036",
+      "type": "fundref"
+     }
+    ],
+    "id": "https://ror.org/02d01az19",
+    "links": [
+     {
+      "type": "website",
+      "value": "https://www.flinders.edu.au/caring-futures-institute"
+     }
+    ],
+    "locations": [
+     {
+      "geonames_details": {
+       "continent_code": "OC",
+       "continent_name": "Oceania",
+       "country_code": "AU",
+       "country_name": "Australia",
+       "country_subdivision_code": "SA",
+       "country_subdivision_name": "South Australia",
+       "lat": -34.92866,
+       "lng": 138.59863,
+       "name": "Adelaide"
+      },
+      "geonames_id": 2078025
+     }
+    ],
+    "names": [
+     {
+      "lang": "en",
+      "types": [
+       "acronym"
+      ],
+      "value": "CFI"
+     },
+     {
+      "lang": "en",
+      "types": [
+       "label",
+       "ror_display"
+      ],
+      "value": "Caring Futures Institute"
+     },
+     {
+      "lang": "en",
+      "types": [
+       "alias"
+      ],
+      "value": "Caring Futures Institute at Flinders University"
+     },
+     {
+      "lang": "en",
+      "types": [
+       "alias"
+      ],
+      "value": "Caring Futures Institute of Flinders University"
+     },
+     {
+      "lang": "en",
+      "types": [
+       "alias"
+      ],
+      "value": "Flinders CFI"
+     },
+     {
+      "lang": "en",
+      "types": [
+       "alias"
+      ],
+      "value": "Flinders Caring Futures Institute"
+     },
+     {
+      "lang": "en",
+      "types": [
+       "alias"
+      ],
+      "value": "Flinders University's Caring Futures Institute"
+     }
+    ],
+    "relationships": [
+     {
+      "label": "Flinders University",
+      "type": "parent",
+      "id": "https://ror.org/01kpzv902"
+     }
+    ],
+    "status": "active",
+    "types": [
+     "facility",
+     "funder"
+    ]
+   }
+  }
+ ]
+}

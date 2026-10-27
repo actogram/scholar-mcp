@@ -1,0 +1,154 @@
+{
+ "studies": [
+  {
+   "protocolSection": {
+    "identificationModule": {
+     "nctId": "NCT02451293",
+     "briefTitle": "The Effect of MElatonin on Depression, Anxiety, CIrcadian and Sleep Disturbances in Patients After Acute Myocardial Syndrome"
+    },
+    "statusModule": {
+     "overallStatus": "COMPLETED",
+     "startDateStruct": {
+      "date": "2016-01-18",
+      "type": "ACTUAL"
+     }
+    },
+    "sponsorCollaboratorsModule": {
+     "leadSponsor": {
+      "name": "Zealand University Hospital",
+      "class": "OTHER"
+     }
+    },
+    "contactsLocationsModule": {
+     "overallOfficials": [
+      {
+       "name": "Michael Tvilling Madsen, M.D.",
+       "affiliation": "Department of surgery. Koege and Roskilde Hospital",
+       "role": "PRINCIPAL_INVESTIGATOR"
+      },
+      {
+       "name": "Ismail G\u00f6genur, M.D. Professor",
+       "affiliation": "Department of surgery. Koege and Roskilde Hospital",
+       "role": "STUDY_CHAIR"
+      },
+      {
+       "name": "Erik Simonsen, M.D. Professor",
+       "affiliation": "Psychiatric Research Unit, Region Zealand",
+       "role": "STUDY_CHAIR"
+      }
+     ],
+     "locations": [
+      {
+       "facility": "Roskilde and K\u00f8ge Hospital, Department of Surgery.",
+       "city": "K\u00f8ge",
+       "state": "Danmark",
+       "zip": "4600",
+       "country": "Denmark",
+       "geoPoint": {
+        "lat": 55.45802,
+        "lon": 12.18214
+       }
+      },
+      {
+       "facility": "Department of internal Medicin, Holbaek Sygehus",
+       "city": "Holb\u00e6k",
+       "state": "Region Sj\u00e6lland",
+       "zip": "4300",
+       "country": "Denmark",
+       "geoPoint": {
+        "lat": 55.7175,
+        "lon": 11.71279
+       }
+      },
+      {
+       "facility": "Department of internal medicin, M5",
+       "city": "K\u00f8ge",
+       "state": "Region Sj\u00e6lland",
+       "zip": "4600",
+       "country": "Denmark",
+       "geoPoint": {
+        "lat": 55.45802,
+        "lon": 12.18214
+       }
+      },
+      {
+       "facility": "Department of Cardiology, Roskilde Sygehus",
+       "city": "Roskilde",
+       "state": "Region Sj\u00e6lland",
+       "zip": "4000",
+       "country": "Denmark",
+       "geoPoint": {
+        "lat": 55.64152,
+        "lon": 12.08035
+       }
+      },
+      {
+       "facility": "Department of Cardiology, Hvidovre Hospital,",
+       "city": "Hvidovre",
+       "zip": "2650",
+       "country": "Denmark",
+       "geoPoint": {
+        "lat": 55.64297,
+        "lon": 12.47708
+       }
+      },
+      {
+       "facility": "Department of Cardiology, Slagelse Sygehus",
+       "city": "Slagelse",
+       "zip": "4200",
+       "country": "Denmark",
+       "geoPoint": {
+        "lat": 55.40276,
+        "lon": 11.35459
+       }
+      }
+     ]
+    }
+   }
+  },
+  {
+   "protocolSection": {
+    "identificationModule": {
+     "nctId": "NCT02974309",
+     "briefTitle": "Family Routines Enhancing Adolescent Diabetes by Optimizing Management"
+    },
+    "statusModule": {
+     "overallStatus": "COMPLETED",
+     "startDateStruct": {
+      "date": "2017-09-15",
+      "type": "ACTUAL"
+     }
+    },
+    "sponsorCollaboratorsModule": {
+     "leadSponsor": {
+      "name": "University of Arizona",
+      "class": "OTHER"
+     }
+    },
+    "contactsLocationsModule": {
+     "overallOfficials": [
+      {
+       "name": "Michelle M Perfect, PhD",
+       "affiliation": "UA College of Education",
+       "role": "PRINCIPAL_INVESTIGATOR"
+      }
+     ],
+     "locations": [
+      {
+       "facility": "Pediatric Endocrinology Clinic",
+       "city": "Tucson",
+       "state": "Arizona",
+       "zip": "85719",
+       "country": "United States",
+       "geoPoint": {
+        "lat": 32.22174,
+        "lon": -110.92648
+       }
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "nextPageToken": "ZVNj7o2Elu8o3lpzTIj75q2tmpOQJJxpZvas1Pg"
+}

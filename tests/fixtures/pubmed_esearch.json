@@ -1,0 +1,35 @@
+{
+ "header": {
+  "type": "esearch",
+  "version": "0.3"
+ },
+ "esearchresult": {
+  "count": "3",
+  "retmax": "3",
+  "retstart": "0",
+  "idlist": [
+   "40903419",
+   "41205918",
+   "41345970"
+  ],
+  "translationset": [
+   {
+    "from": "actigraphy",
+    "to": "\"actigraphy\"[MeSH Terms] OR \"actigraphy\"[All Fields]"
+   },
+   {
+    "from": "sleep",
+    "to": "\"sleep\"[MeSH Terms] OR \"sleep\"[All Fields] OR \"sleeping\"[All Fields] OR \"sleeps\"[All Fields] OR \"sleep's\"[All Fields]"
+   },
+   {
+    "from": "regularity",
+    "to": "\"regular\"[All Fields] OR \"regularities\"[All Fields] OR \"regularity\"[All Fields] OR \"regularization\"[All Fields] OR \"regularizations\"[All Fields] OR \"regularize\"[All Fields] OR \"regularized\"[All Fields] OR \"regularizer\"[All Fields] OR \"regularizers\"[All Fields] OR \"regularizes\"[All Fields] OR \"regularizing\"[All Fields] OR \"regulars\"[All Fields]"
+   },
+   {
+    "from": "older adults",
+    "to": "\"aged\"[MeSH Terms] OR \"aged\"[All Fields] OR (\"older\"[All Fields] AND \"adults\"[All Fields]) OR \"older adults\"[All Fields]"
+   }
+  ],
+  "querytranslation": "(\"actigraphy\"[MeSH Terms] OR \"actigraphy\"[All Fields]) AND (\"sleep\"[MeSH Terms] OR \"sleep\"[All Fields] OR \"sleeping\"[All Fields] OR \"sleeps\"[All Fields] OR \"sleep s\"[All Fields]) AND (\"regular\"[All Fields] OR \"regularities\"[All Fields] OR \"regularity\"[All Fields] OR \"regularization\"[All Fields] OR \"regularizations\"[All Fields] OR \"regularize\"[All Fields] OR \"regularized\"[All Fields] OR \"regularizer\"[All Fields] OR \"regularizers\"[All Fields] OR \"regularizes\"[All Fields] OR \"regularizing\"[All Fields] OR \"regulars\"[All Fields]) AND (\"aged\"[MeSH Terms] OR \"aged\"[All Fields] OR (\"older\"[All Fields] AND \"adults\"[All Fields]) OR \"older adults\"[All Fields]) AND 2025/01/01:2025/12/31[Date - Publication]"
+ }
+}

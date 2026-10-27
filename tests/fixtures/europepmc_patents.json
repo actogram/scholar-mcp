@@ -1,0 +1,319 @@
+{
+ "version": "6.9",
+ "hitCount": 44,
+ "nextCursorMark": "AoIIPw2GfSgyOTY2MTA0NQ==",
+ "nextPageUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28actigraphy+OR+accelerometer+OR+wearable%29+AND+%28sleep+OR+circadian%29+AND+SRC%3APAT&cursorMark=AoIIPw2GfSgyOTY2MTA0NQ%3D%3D&resultType=core&pageSize=3&format=json",
+ "request": {
+  "queryString": "(actigraphy OR accelerometer OR wearable) AND (sleep OR circadian) AND SRC:PAT",
+  "resultType": "core",
+  "cursorMark": "*",
+  "pageSize": 3,
+  "sort": "",
+  "synonym": false
+ },
+ "resultList": {
+  "result": [
+   {
+    "id": "US2011230790",
+    "source": "PAT",
+    "title": "Method and system for sleep monitoring, regulation and planning",
+    "authorString": "KOZLOV VALERIY.",
+    "authorList": {
+     "author": [
+      {
+       "fullName": "KOZLOV VALERIY",
+       "lastName": "KOZLOV VALERIY"
+      }
+     ]
+    },
+    "pubYear": "2011",
+    "abstractText": "A method for operating a sleep phase actigraphy synchronized alarm clock that communicates with a remote sleep database, such as an internet server database, and compares user physiological parameters, sleep settings, and actigraphy data with a large database that may include data collected from a large number of other users with similar physiological parameters, sleep settings, and actigraphy data. The remote server may use \"black box\" analysis approach by running supervised learning algorithms to analyze the database, producing sleep phase correction data which can be uploaded to the alarm clock, and be used by the alarm clock to further improve its REM sleep phase prediction accuracy.",
+    "language": "eng",
+    "pubTypeList": {
+     "pubType": [
+      "Patent"
+     ]
+    },
+    "patentDetails": {
+     "typeCode": "A1",
+     "typeDescription": "Patent Appl. Publ. within the TVPP",
+     "countryCode": "US",
+     "country": "United States",
+     "classifierList": {
+      "classifier": [
+       {
+        "classification": "A61B5/00",
+        "classificationType": "IPC",
+        "hyperlink": "http://www.cooperativepatentclassification.org/cpc/scheme/A/scheme-A61B.pdf"
+       },
+       {
+        "classification": "A61B5/11",
+        "classificationType": "IPC",
+        "hyperlink": "http://www.cooperativepatentclassification.org/cpc/scheme/A/scheme-A61B.pdf"
+       }
+      ]
+     },
+     "application": {
+      "applicationNumber": "US20100748403",
+      "applicationDate": "2010-03-27",
+      "orderIn": 0
+     },
+     "priorityList": {
+      "priority": [
+       {
+        "priorityNumber": "UA20100003014",
+        "orderIn": 1,
+        "priorityDate": "2010-03-27"
+       }
+      ]
+     }
+    },
+    "fullTextUrlList": {
+     "fullTextUrl": [
+      {
+       "availability": "Free",
+       "availabilityCode": "F",
+       "documentStyle": "html",
+       "site": "SureChembl",
+       "url": "https://www.surechembl.org/document/US-20110230790-A1"
+      },
+      {
+       "availability": "Free",
+       "availabilityCode": "F",
+       "documentStyle": "html",
+       "site": "EPO",
+       "url": "http://v3.espacenet.com/textdoc?DB=EPODOC&IDX=US2011230790"
+      }
+     ]
+    },
+    "isOpenAccess": "N",
+    "inEPMC": "N",
+    "inPMC": "N",
+    "citedByCount": 0,
+    "hasReferences": "N",
+    "hasTextMinedTerms": "Y",
+    "hasDbCrossReferences": "N",
+    "hasPDF": "N",
+    "hasBook": "N",
+    "hasSuppl": "N",
+    "hasLabsLinks": "N",
+    "hasData": "N",
+    "authMan": "N",
+    "epmcAuthMan": "N",
+    "nihAuthMan": "N",
+    "hasTMAccessionNumbers": "N",
+    "dateOfCompletion": "2011-09-22",
+    "dateOfCreation": "2010-03-27",
+    "firstPublicationDate": "2010-03-27",
+    "firstIndexDate": "2011-11-15",
+    "hasEvaluations": "N"
+   },
+   {
+    "id": "US2010125215",
+    "source": "PAT",
+    "title": "SLEEP ANALYSIS SYSTEM AND METHOD FOR ANALYZING SLEEP THEREOF",
+    "authorString": "KUO BO-JAU, YANG CHING-HSIU.",
+    "authorList": {
+     "author": [
+      {
+       "fullName": "KUO BO-JAU",
+       "lastName": "KUO BO-JAU"
+      },
+      {
+       "fullName": "YANG CHING-HSIU",
+       "lastName": "YANG CHING-HSIU"
+      }
+     ]
+    },
+    "pubYear": "2010",
+    "abstractText": "The invention provides a sleep analysis system and a method for analysis thereof. The sleep analysis system includes an analysis device and a sleep sensing apparatus. The sleep sensing apparatus includes an ECG signal collector, a multi-axial accelerometer, a wireless transmitting unit, and a control unit. The ECG signal collector is used for collecting an ECG signal associated with a subject. The multi-axial accelerometer is used for detecting a multi-axial accelerometer signal associated with the subject. The control unit controls the wireless transmitting unit to transmit the ECG signal and the multi-axial accelerometer signal to the analysis device for analyzing sleep of the subject.",
+    "affiliation": "UNIV NAT YANG MING",
+    "language": "eng",
+    "pubTypeList": {
+     "pubType": [
+      "Patent"
+     ]
+    },
+    "patentDetails": {
+     "typeCode": "A1",
+     "typeDescription": "Patent Appl. Publ. within the TVPP",
+     "countryCode": "US",
+     "country": "United States",
+     "classifierList": {
+      "classifier": [
+       {
+        "classification": "A61B5/00B2",
+        "classificationType": "EPO",
+        "hyperlink": "http://worldwide.espacenet.com/classification?locale=en_EP#!/CPC=A61B5/00"
+       },
+       {
+        "classification": "A61B5/04",
+        "classificationType": "IPC",
+        "hyperlink": "http://www.cooperativepatentclassification.org/cpc/scheme/A/scheme-A61B.pdf"
+       },
+       {
+        "classification": "G01P15/00",
+        "classificationType": "IPC",
+        "hyperlink": "http://www.cooperativepatentclassification.org/cpc/scheme/G/scheme-G01P.pdf"
+       }
+      ]
+     },
+     "application": {
+      "applicationNumber": "US20090408811",
+      "applicationDate": "2009-03-23",
+      "orderIn": 0
+     },
+     "priorityList": {
+      "priority": [
+       {
+        "priorityNumber": "TW20080144335",
+        "orderIn": 1,
+        "priorityDate": "2009-03-23"
+       }
+      ]
+     }
+    },
+    "fullTextUrlList": {
+     "fullTextUrl": [
+      {
+       "availability": "Free",
+       "availabilityCode": "F",
+       "documentStyle": "html",
+       "site": "SureChembl",
+       "url": "https://www.surechembl.org/document/US-20100125215-A1"
+      },
+      {
+       "availability": "Free",
+       "availabilityCode": "F",
+       "documentStyle": "html",
+       "site": "EPO",
+       "url": "http://v3.espacenet.com/textdoc?DB=EPODOC&IDX=US2010125215"
+      }
+     ]
+    },
+    "isOpenAccess": "N",
+    "inEPMC": "N",
+    "inPMC": "N",
+    "citedByCount": 0,
+    "hasReferences": "N",
+    "hasTextMinedTerms": "Y",
+    "hasDbCrossReferences": "N",
+    "hasPDF": "N",
+    "hasBook": "N",
+    "hasSuppl": "N",
+    "hasLabsLinks": "N",
+    "hasData": "N",
+    "authMan": "N",
+    "epmcAuthMan": "N",
+    "nihAuthMan": "N",
+    "hasTMAccessionNumbers": "N",
+    "dateOfCompletion": "2010-05-20",
+    "dateOfCreation": "2009-03-23",
+    "firstPublicationDate": "2009-03-23",
+    "firstIndexDate": "2010-08-10",
+    "hasEvaluations": "N"
+   },
+   {
+    "id": "GB2481116",
+    "source": "PAT",
+    "title": "Apparatus for helping a baby to sleep",
+    "authorString": "BRADSHAW LUCY JANE.",
+    "authorList": {
+     "author": [
+      {
+       "fullName": "BRADSHAW LUCY JANE",
+       "lastName": "BRADSHAW LUCY JANE"
+      }
+     ]
+    },
+    "pubYear": "2011",
+    "abstractText": "An apparatus 2 is provided for assisting a baby to sleep. The apparatus comprises a sound unit 4 arranged to provide soothing sounds to the baby, and a band 6 being worn on the wrist or ankle of the baby. The apparatus is arranged such that the band is in wireless communication with the sound unit. The band includes a motion detector for detecting movement of the baby whereby the band causes the sound unit to produce soothing sounds upon detecting movement of the baby. The band device further causes the sound unit to cease producing the soothing sounds upon the motion detector no longer detecting movement of the baby. The apparatus may operate in a cyclical manner firstly providing soothing sounds when the baby is awake in order to get the baby to fall asleep, and secondly providing soothing sounds after the baby emerges from a sleep stage. The soothing sounds may be womb sound. The motion detector may comprise an accelerometer.",
+    "affiliation": "BRADSHAW LUCY JANE",
+    "language": "eng",
+    "pubTypeList": {
+     "pubType": [
+      "Patent"
+     ]
+    },
+    "patentDetails": {
+     "typeCode": "A",
+     "typeDescription": "Patent Specification",
+     "countryCode": "GB",
+     "country": "United Kingdom",
+     "classifierList": {
+      "classifier": [
+       {
+        "classification": "A61M21/02",
+        "classificationType": "EPO",
+        "hyperlink": "http://worldwide.espacenet.com/classification?locale=en_EP#!/CPC=A61M21/02"
+       },
+       {
+        "classification": "A61M21/02",
+        "classificationType": "IPC",
+        "hyperlink": "http://www.cooperativepatentclassification.org/cpc/scheme/A/scheme-A61M.pdf"
+       },
+       {
+        "classification": "G08B21/00",
+        "classificationType": "IPC",
+        "hyperlink": "http://www.cooperativepatentclassification.org/cpc/scheme/G/scheme-G08B.pdf"
+       }
+      ]
+     },
+     "application": {
+      "applicationNumber": "GB20110009421",
+      "applicationDate": "2011-06-06",
+      "orderIn": 0
+     },
+     "priorityList": {
+      "priority": [
+       {
+        "priorityNumber": "GB20100009524",
+        "orderIn": 1,
+        "priorityDate": "2011-06-06"
+       }
+      ]
+     }
+    },
+    "fullTextUrlList": {
+     "fullTextUrl": [
+      {
+       "availability": "Free",
+       "availabilityCode": "F",
+       "documentStyle": "html",
+       "site": "SureChembl",
+       "url": "https://www.surechembl.org/document/GB-2481116-B"
+      },
+      {
+       "availability": "Free",
+       "availabilityCode": "F",
+       "documentStyle": "html",
+       "site": "EPO",
+       "url": "http://v3.espacenet.com/textdoc?DB=EPODOC&IDX=GB2481116"
+      }
+     ]
+    },
+    "isOpenAccess": "N",
+    "inEPMC": "N",
+    "inPMC": "N",
+    "citedByCount": 0,
+    "hasReferences": "N",
+    "hasTextMinedTerms": "Y",
+    "hasDbCrossReferences": "N",
+    "hasPDF": "N",
+    "hasBook": "N",
+    "hasSuppl": "N",
+    "hasLabsLinks": "N",
+    "hasData": "N",
+    "authMan": "N",
+    "epmcAuthMan": "N",
+    "nihAuthMan": "N",
+    "hasTMAccessionNumbers": "N",
+    "dateOfCompletion": "2011-12-14",
+    "dateOfCreation": "2011-06-06",
+    "firstPublicationDate": "2011-06-06",
+    "firstIndexDate": "2012-03-07",
+    "hasEvaluations": "N"
+   }
+  ]
+ }
+}
