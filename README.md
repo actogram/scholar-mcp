@@ -1,10 +1,14 @@
-# Actogram Scholar
+# Actogram LabScout
 
 Find the labs, people and studies behind a research topic, and see on a map who works on it and where.
 
-Scholar searches public sources, groups the papers by their senior author and organisation, and says in one sentence
+LabScout searches public sources, groups the papers by their senior author and organisation, and says in one sentence
 why each lab came up: how many papers on the topic it led, in which years, with what kind of data and which species.
-It works from the command line, and as an MCP server that AI assistants can call.
+It also finds grants, registered trials and patents on a topic. You can use it in three ways:
+
+- **on the web page:** type a topic, get a map, a table and an Excel file;
+- **from an AI assistant**, as an MCP server;
+- **from the command line** or your own Python code.
 
 It grew out of [pubmed2worldmap](https://github.com/timpyrkov/pubmed2worldmap) by Tim Pyrkov, and is part of
 [Actogram Open Science](https://actogram.org).
@@ -14,9 +18,10 @@ It grew out of [pubmed2worldmap](https://github.com/timpyrkov/pubmed2worldmap) b
 | Source | What it gives | Terms |
 |---|---|---|
 | [PubMed](https://pubmed.ncbi.nlm.nih.gov/) through [NCBI E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25497/) | papers, authors, affiliations, MeSH terms, funders | free; at most 3 requests a second, 10 with an API key; [NCBI policies](https://www.ncbi.nlm.nih.gov/home/about/policies/) |
-| [Europe PMC](https://europepmc.org/RestfulWebService) | papers and preprints, ORCID iDs, funders, links to datasets | free |
+| [Europe PMC](https://europepmc.org/RestfulWebService) | papers and preprints, ORCID iDs, funders, links to datasets; patent records up to 2014 | free |
 | [Research Organization Registry](https://ror.org/) | the organisation behind an affiliation, its city and coordinates | free, CC0 |
-| [NIH RePORTER](https://api.reporter.nih.gov/) | NIH-funded projects and their investigators | free, about one request a second |
+| [NIH RePORTER](https://api.reporter.nih.gov/) | NIH-funded projects and their investigators (USA) | free, about one request a second |
+| [UKRI Gateway to Research](https://gtr.ukri.org/resources/api.html) | UKRI-funded projects, lead investigators and organisations (UK) | free |
 | [ClinicalTrials.gov](https://clinicaltrials.gov/data-api/api) | registered studies, their investigators and sites | free |
 
 Only the official APIs are used. Requests are paced to each source's limits, sent with a clear User-Agent, and kept in
@@ -27,7 +32,7 @@ a local cache for seven days, so a repeated search costs the sources nothing.
 Python 3.10 or newer.
 
 ```bash
-pip install "actogram-scholar @ git+https://github.com/actogram/scholar-mcp"
+pip install "labscout @ git+https://github.com/actogram/scholar-mcp"
 ```
 
 For development:
@@ -39,40 +44,21 @@ python -m venv .venv && . .venv/bin/activate
 pip install -e ".[dev]"
 ```
 
-## Use it from the command line
+## The web page
 
 ```bash
-# labs working on a topic, with a map and a table in one HTML file, and an Excel workbook
-actogram-scholar labs "actigraphy sleep regularity older adults" --from 2020 --xlsx labs.xlsx --html labs.html
-
-# add NIH grants for the five top labs
-actogram-scholar labs "circadian rhythm shift work" --from 2022 --grants 5
-
-# papers, newest first, merged across PubMed and Europe PMC
-actogram-scholar papers "wearable step counts circadian" --max 20
-
-# one researcher: organisations, frequent co-authors and topics, recent papers, NIH grants
-actogram-scholar profile "Susan Redline" --topic "sleep regularity"
-
-# registered studies with investigators and sites
-actogram-scholar trials "actigraphy sleep"
-
-# NIH-funded projects by investigator or by words
-actogram-scholar grants --pi "Susan Redline"
-actogram-scholar grants --text "circadian actigraphy"
+labscout serve                     # http://127.0.0.1:8000, with the MCP server at /mcp
 ```
 
-Searches use PubMed syntax, so `actigraphy AND "sleep regularity"` and field tags such as `[tiab]` work. Each source
-gives at most `--max` papers, newest first.
+Type a topic and press **Find labs**. A new topic takes 30 to 90 seconds; the page shows how long it has been
+searching and refreshes by itself. The report has a map of the labs with a known place, a table you can sort and filter
+with the papers behind each lab, and downloads as Excel, CSV and JSON.
 
-The HTML report is a single file: a map of the labs with a known place, and a table you can sort and filter, with the
-papers behind each lab. The Excel workbook has the sheets Labs, Papers and About.
-
-## Use it from an AI assistant (MCP)
+## From an AI assistant (MCP)
 
 ```bash
-actogram-scholar mcp                           # stdio, for assistants on this computer
-actogram-scholar mcp --http --port 8000       # Streamable HTTP at http://127.0.0.1:8000/mcp
+labscout mcp                       # stdio, for assistants on this computer
+labscout mcp --http --port 8000    # Streamable HTTP at http://127.0.0.1:8000/mcp
 ```
 
 Most MCP clients take a configuration like this:
@@ -80,10 +66,12 @@ Most MCP clients take a configuration like this:
 ```json
 {
   "mcpServers": {
-    "actogram-scholar": { "command": "actogram-scholar", "args": ["mcp"] }
+    "labscout": { "command": "labscout", "args": ["mcp"] }
   }
 }
 ```
+
+A hosted LabScout works the same way: add its `/mcp` address as a custom connector.
 
 The tools, all read-only:
 
@@ -92,16 +80,51 @@ The tools, all read-only:
 | `find_labs` | labs working on a topic, ranked, with the reason each one came up; optional NIH grants |
 | `search_papers` | papers on a topic from PubMed and Europe PMC, with species and data hints |
 | `lab_profile` | one researcher: organisations, years, co-authors, topics, recent papers, NIH grants |
+| `find_grants` | funded projects from NIH RePORTER and UKRI Gateway to Research |
 | `find_trials` | registered studies on ClinicalTrials.gov with investigators and sites |
-| `find_grants` | NIH-funded projects by investigator or by words |
+| `find_patents` | patents on a topic as background: inventors, country, CPC classes, Espacenet link (records up to 2014) |
+
+## From the command line
+
+```bash
+labscout labs "actigraphy sleep regularity older adults" --from 2020 --xlsx labs.xlsx --html labs.html
+labscout labs "circadian rhythm shift work" --from 2022 --grants 5      # NIH grants for the five top labs
+labscout papers "wearable step counts circadian" --max 20
+labscout profile "Susan Redline" --topic "sleep regularity"
+labscout grants --pi "Susan Redline"                                     # NIH RePORTER
+labscout grants --text "circadian actigraphy"                            # NIH RePORTER and UKRI
+labscout trials "actigraphy sleep"
+labscout patents "actigraphy AND sleep"
+```
+
+Searches use PubMed syntax, so `actigraphy AND "sleep regularity"` and field tags such as `[tiab]` work. Each source
+gives at most `--max` papers, newest first.
 
 ## Settings
 
 | Variable | Meaning |
 |---|---|
-| `SCHOLAR_EMAIL` | your contact address, sent to NCBI and in the User-Agent as their policies ask (recommended) |
+| `LABSCOUT_EMAIL` | your contact address, sent to NCBI and in the User-Agent as their policies ask (recommended) |
 | `NCBI_API_KEY` | an [NCBI API key](https://support.nlm.nih.gov/kbArticle/?pn=KA-05317) for faster PubMed searches |
-| `SCHOLAR_CACHE_DIR` | where the cache lives (default `~/.cache/actogram-scholar`); an empty value switches it off |
+| `LABSCOUT_CACHE_DIR` | where the cache lives (default `~/.cache/labscout`); an empty value switches it off |
+| `LABSCOUT_WEB_MAX_PAPERS` | papers per source for one search on the web page (default 100) |
+| `LABSCOUT_SEARCHES_PER_HOUR` | searches one visitor of the web page can start in an hour (default 20) |
+| `LABSCOUT_PARALLEL_SEARCHES` | searches the web page runs at the same time (default 2) |
+| `LABSCOUT_ALLOWED_HOSTS` | host names the MCP endpoint answers for, besides localhost (Hugging Face sets `SPACE_HOST` itself) |
+
+## Host it
+
+The folder `deploy/huggingface` holds a Docker setup for a [Hugging Face Docker Space](https://huggingface.co/docs/hub/spaces-sdks-docker),
+which also runs anywhere Docker does:
+
+```bash
+deploy/huggingface/build_space.sh build/space       # the Space files: Dockerfile, card, package
+docker build -t labscout build/space
+docker run -p 7860:7860 -e LABSCOUT_EMAIL=you@example.org labscout
+```
+
+To publish a Space, upload `build/space` to a new Docker Space and set `LABSCOUT_EMAIL` as a Space variable. The web page
+and the MCP endpoint (`https://<space>.hf.space/mcp`) then run together.
 
 ## How a lab is found
 
@@ -118,10 +141,10 @@ The tools, all read-only:
 
 ## Privacy and fair use
 
-Scholar shows information that researchers have made public in their work: names, affiliations, publications, grants
-and registered studies. It removes e-mail addresses from affiliations and never returns them. Use the results to find
-research and collaborators, not to judge people. Organisation matching is automatic and can be wrong, so check before
-you act on a result.
+LabScout shows information that researchers have made public in their work: names, affiliations, publications, grants,
+patents and registered studies. It removes e-mail addresses from affiliations and never returns them. Use the results to
+find research and collaborators, not to judge people. Organisation matching is automatic and can be wrong, so check
+before you act on a result.
 
 ## Development
 
@@ -131,8 +154,8 @@ pytest                 # offline tests on recorded answers of the real APIs
 pytest -m network      # a few live requests to the public APIs
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Planned next: patent sources for prior art, CORDIS and UKRI grants, and a
-simple web page.
+See [CONTRIBUTING.md](CONTRIBUTING.md). Planned next: newer patents through a patent office service, EU grants from
+CORDIS.
 
 ## Cite
 

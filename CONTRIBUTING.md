@@ -22,7 +22,7 @@ pip install -e ".[dev]"
 
 ## Adding a source
 
-A source lives in `src/actogram_scholar/sources/`, uses the shared client in `http.py` (pacing, retries, cache), and
+A source lives in `src/labscout/sources/`, uses the shared client in `http.py` (pacing, retries, cache), and
 returns the records in `models.py`. Use only official APIs, respect their rate limits and terms, and list the source in
 the README table with its terms.
 
