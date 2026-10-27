@@ -1,4 +1,4 @@
-"""Command line: `actogram-scholar labs "actigraphy sleep regularity" --from 2020 --xlsx labs.xlsx --html labs.html`."""
+"""Command line: `labscout labs "actigraphy sleep regularity" --from 2020 --xlsx labs.xlsx --html labs.html`."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ from .errors import SearchError
 from .export import to_csv, to_html, to_json, to_xlsx
 from .http import Http
 from .pipeline import collect, find_labs, profile, split_name
-from .sources import PUBLICATION_SOURCES, clinicaltrials, nih_reporter
+from .sources import PUBLICATION_SOURCES, clinicaltrials, nih_reporter, patents, ukri
 
 
 def _sources(value: str) -> list[str]:
@@ -30,9 +30,7 @@ def _years(p: argparse.ArgumentParser) -> None:
 
 
 def parser() -> argparse.ArgumentParser:
-    ap = argparse.ArgumentParser(
-        prog="actogram-scholar", description="Find the labs, people and studies behind a topic."
-    )
+    ap = argparse.ArgumentParser(prog="labscout", description="Find the labs, people and studies behind a topic.")
     ap.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     ap.add_argument("-v", "--verbose", action="store_true", help="show what is being fetched")
     sub = ap.add_subparsers(dest="command", required=True)
@@ -67,17 +65,31 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument("--max", type=int, default=25)
     p.add_argument("--json", action="store_true")
 
-    p = sub.add_parser("grants", help="NIH-funded projects from NIH RePORTER")
+    p = sub.add_parser("patents", help="patents on a topic, as background (Europe PMC patent records, up to 2014)")
+    p.add_argument("topic")
+    _years(p)
+    p.add_argument("--max", type=int, default=25)
+
+    p = sub.add_parser("grants", help="funded projects from NIH RePORTER (USA) and UKRI Gateway to Research (UK)")
     p.add_argument("--pi", default="", help='investigator, e.g. "Susan Redline"')
     p.add_argument("--text", default="", help="words in the project title and terms")
     p.add_argument("--since", type=int, help="first fiscal year (default: the last five years)")
     p.add_argument("--max", type=int, default=25)
+    p.add_argument("--funders", default="nih,ukri", help="nih, ukri or both (default both; a name search uses NIH)")
+
+    p = sub.add_parser("serve", help="run the web page and the MCP server (at /mcp) together")
+    p.add_argument("--host", default="127.0.0.1")
+    p.add_argument("--port", type=int, default=8000)
 
     p = sub.add_parser("mcp", help="run the MCP server for AI assistants")
     p.add_argument("--http", action="store_true", help="serve Streamable HTTP instead of stdio")
     p.add_argument("--host", default="127.0.0.1")
     p.add_argument("--port", type=int, default=8000)
     return ap
+
+
+def _names(names: list[str]) -> str:
+    return ", ".join(names)
 
 
 def _short(s: str, n: int) -> str:
@@ -87,6 +99,11 @@ def _short(s: str, n: int) -> str:
 def main(argv: list[str] | None = None) -> int:
     args = parser().parse_args(argv)
     logging.basicConfig(level=logging.INFO if args.verbose else logging.WARNING, format="%(levelname)s %(message)s")
+    if args.command == "serve":
+        from .web import run as serve
+
+        serve(host=args.host, port=args.port)
+        return 0
     if args.command == "mcp":
         from .server import run
 
@@ -138,35 +155,57 @@ def main(argv: list[str] | None = None) -> int:
                     f"{t.nct_id}  {_short(t.title, 90)}\n      {t.status} | {t.sponsor} | {who} | {len(t.sites)} sites"
                 )
         return 0
+    if args.command == "patents":
+        with Http() as http:
+            found = patents.search(http, args.topic, args.start, args.end, args.max)
+        for pt in found:
+            print(
+                f"{pt.year or '----'}  {pt.number}  {_short(pt.title, 80)}\n      {_names(pt.inventors[:3])} | {pt.url}"
+            )
+        print(f"(patent records in Europe PMC end in {patents.LAST_YEAR})")
+        return 0
     if args.command == "grants":
         if not args.pi and not args.text:
             print("give --pi, --text or both", file=sys.stderr)
             return 2
+        funders = {f.strip() for f in args.funders.split(",")}
         last, first = split_name(args.pi) if args.pi else ("", "")
+        grants = []
         with Http() as http:
-            grants = nih_reporter.search(
-                http,
-                pi_last=last,
-                pi_first=first.split(" ")[0] if first else "",
-                text=args.text,
-                since=args.since,
-                limit=args.max,
-            )
+            if "nih" in funders:
+                grants += nih_reporter.search(
+                    http,
+                    pi_last=last,
+                    pi_first=first.split(" ")[0] if first else "",
+                    text=args.text,
+                    since=args.since,
+                    limit=args.max,
+                )
+            if "ukri" in funders and args.text and not args.pi:
+                grants += ukri.search(http, args.text, limit=args.max)
         for g in grants:
-            print(
-                f"{g.fiscal_year}  {g.number}  {_short(g.title, 80)}\n"
-                f"      {g.organization} | {', '.join(g.investigators)}"
-            )
+            year = g.fiscal_year or g.status
+            print(f"{year}  {g.funder}  {g.number}  {_short(g.title, 76)}")
+            print(f"      {g.organization} | {_names(g.investigators)}")
         return 0
     return 1
 
 
 def run() -> int:
+    import httpx
+
     try:
         return main()
     except SearchError as err:
-        print(f"actogram-scholar: {err}", file=sys.stderr)
+        print(f"labscout: {err}", file=sys.stderr)
         return 2
+    except httpx.HTTPStatusError as err:
+        host, code = err.request.url.host, err.response.status_code
+        print(f"labscout: {host} is not answering right now (HTTP {code}); please try again later", file=sys.stderr)
+        return 1
+    except httpx.HTTPError as err:
+        print(f"labscout: a source is not reachable right now ({type(err).__name__})", file=sys.stderr)
+        return 1
 
 
 if __name__ == "__main__":

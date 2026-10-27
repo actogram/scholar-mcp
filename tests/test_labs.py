@@ -1,5 +1,5 @@
-from actogram_scholar.labs import build
-from actogram_scholar.models import Author, Organization, Paper
+from labscout.labs import build
+from labscout.models import Author, Organization, Paper
 
 
 def _paper(title, year, authors, mesh=("Humans",), abstract=""):

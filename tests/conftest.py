@@ -8,7 +8,7 @@ from typing import Any
 
 import pytest
 
-from actogram_scholar.config import Settings
+from labscout.config import Settings
 
 FIX = Path(__file__).parent / "fixtures"
 
@@ -22,7 +22,7 @@ def fixture_json(name: str) -> Any:
 
 
 class FakeHttp:
-    """Answers like `actogram_scholar.http.Http`, from fixtures, and records every call."""
+    """Answers like `labscout.http.Http`, from fixtures, and records every call."""
 
     def __init__(self, routes: dict[str, Any] | None = None) -> None:
         self.settings = Settings(email="test@example.org", cache_dir=None)
@@ -36,7 +36,7 @@ class FakeHttp:
                 return value(url, payload) if callable(value) else value
         raise AssertionError(f"no fixture for {method} {url} {payload}")
 
-    def get_json(self, url: str, params: dict[str, Any] | None = None) -> Any:
+    def get_json(self, url: str, params: dict[str, Any] | None = None, headers: dict[str, str] | None = None) -> Any:
         return self._answer("GET", url, params)
 
     def get_text(self, url: str, params: dict[str, Any] | None = None) -> str:
@@ -54,13 +54,13 @@ class FakeHttp:
 
 @pytest.fixture
 def pubmed_papers():
-    from actogram_scholar.sources import pubmed
+    from labscout.sources import pubmed
 
     return pubmed.parse(fixture_text("pubmed_efetch.xml"))
 
 
 @pytest.fixture
 def epmc_papers():
-    from actogram_scholar.sources import europepmc
+    from labscout.sources import europepmc
 
     return [europepmc.parse_result(r) for r in fixture_json("europepmc_search.json")["resultList"]["result"]]

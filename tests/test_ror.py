@@ -1,6 +1,6 @@
 from conftest import FakeHttp, fixture_json
 
-from actogram_scholar.sources.ror import Resolver
+from labscout.sources.ror import Resolver
 
 FLINDERS = (
     "Flinders Health and Medical Research Institute (Sleep Health), College of Medicine and Public Health, "

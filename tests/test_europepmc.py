@@ -1,6 +1,6 @@
 from conftest import FakeHttp, fixture_json
 
-from actogram_scholar.sources import europepmc
+from labscout.sources import europepmc
 
 
 def test_parse_result(epmc_papers):

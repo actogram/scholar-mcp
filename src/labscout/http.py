@@ -24,6 +24,7 @@ PACE = {
     "www.ebi.ac.uk": 0.1,
     "api.reporter.nih.gov": 1.0,
     "clinicaltrials.gov": 0.2,
+    "gtr.ukri.org": 0.3,
 }
 RETRY_STATUS = {429, 500, 502, 503, 504}
 CACHE_DAYS = 7
@@ -55,8 +56,8 @@ class Http:
         self.close()
 
     # ---- public helpers ---------------------------------------------------------------------------------------------
-    def get_json(self, url: str, params: dict[str, Any] | None = None) -> Any:
-        return self._request("GET", url, params=params, kind="json")
+    def get_json(self, url: str, params: dict[str, Any] | None = None, headers: dict[str, str] | None = None) -> Any:
+        return self._request("GET", url, params=params, headers=headers, kind="json")
 
     def get_text(self, url: str, params: dict[str, Any] | None = None) -> str:
         return self._request("GET", url, params=params, kind="text")
@@ -76,9 +77,10 @@ class Http:
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
         json_body: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
         kind: str,
     ) -> Any:
-        key = self._key(method, url, params, data, json_body)
+        key = self._key(method, url, params, data, json_body, headers)
         cached = self._cache_get(key)
         if cached is not None:
             return cached
@@ -87,7 +89,7 @@ class Http:
         for attempt in range(4):
             self._wait(host)
             try:
-                resp = self._client.request(method, url, params=params, data=data, json=json_body)
+                resp = self._client.request(method, url, params=params, data=data, json=json_body, headers=headers)
             except httpx.TransportError as err:
                 if attempt == 3:
                     raise
@@ -118,8 +120,8 @@ class Http:
         self._last[host] = time.monotonic()
 
     @staticmethod
-    def _key(method: str, url: str, params: Any, data: Any, json_body: Any) -> str:
-        raw = json.dumps([method, url, params, data, json_body], sort_keys=True, default=str)
+    def _key(method: str, url: str, params: Any, data: Any, json_body: Any, headers: Any = None) -> str:
+        raw = json.dumps([method, url, params, data, json_body, headers], sort_keys=True, default=str)
         return hashlib.sha256(raw.encode()).hexdigest()
 
     def _cache_path(self, key: str) -> Path | None:

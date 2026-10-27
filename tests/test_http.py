@@ -1,11 +1,11 @@
 import httpx
 
-from actogram_scholar.config import Settings
-from actogram_scholar.http import Http
+from labscout.config import Settings
+from labscout.http import Http
 
 
 def test_retries_busy_answers_then_caches(tmp_path, monkeypatch):
-    monkeypatch.setattr("actogram_scholar.http.time.sleep", lambda s: None)
+    monkeypatch.setattr("labscout.http.time.sleep", lambda s: None)
     calls = []
 
     def handler(request):
@@ -22,5 +22,5 @@ def test_retries_busy_answers_then_caches(tmp_path, monkeypatch):
 
 
 def test_user_agent_names_the_tool_and_contact():
-    assert Settings(email="me@example.org").user_agent.startswith("actogram-scholar/")
+    assert Settings(email="me@example.org").user_agent.startswith("labscout/")
     assert "mailto:me@example.org" in Settings(email="me@example.org").user_agent

@@ -1,7 +1,7 @@
-from actogram_scholar import cli
-from actogram_scholar.labs import build
-from actogram_scholar.models import Author, Organization, Paper
-from actogram_scholar.pipeline import Result
+from labscout import cli
+from labscout.labs import build
+from labscout.models import Author, Organization, Paper
+from labscout.pipeline import Result
 
 
 def test_labs_prints_and_saves_files(monkeypatch, tmp_path, capsys):

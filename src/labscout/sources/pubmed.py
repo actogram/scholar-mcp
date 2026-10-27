@@ -19,7 +19,7 @@ from ..text import clean_affiliation
 log = logging.getLogger(__name__)
 
 BASE = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
-TOOL = "actogram-scholar"
+TOOL = "labscout"
 ESEARCH_CAP = 9999  # esearch cannot page past 10,000 records; larger searches are split by year
 
 

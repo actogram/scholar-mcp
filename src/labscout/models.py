@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from typing import Any
 
 from .text import name_key
@@ -84,10 +84,57 @@ class Grant:
     investigators: list[str] = field(default_factory=list)
     end_date: str = ""
     source: str = "NIH RePORTER"
+    funder: str = "NIH"
+    status: str = ""
 
     @property
     def url(self) -> str:
-        return f"https://reporter.nih.gov/search/results?query={self.number}" if self.number else ""
+        if not self.number:
+            return ""
+        if self.source.startswith("UKRI"):
+            return f"https://gtr.ukri.org/projects?ref={self.number}"
+        return f"https://reporter.nih.gov/search/results?query={self.number}"
+
+    def brief(self) -> dict[str, Any]:
+        return {
+            "title": self.title,
+            "number": self.number,
+            "funder": self.funder,
+            "fiscal_year": self.fiscal_year,
+            "status": self.status,
+            "organization": self.organization,
+            "investigators": self.investigators,
+            "end_date": self.end_date,
+            "source": self.source,
+            "url": self.url,
+        }
+
+
+@dataclass
+class Patent:
+    number: str
+    title: str
+    year: int | None = None
+    inventors: list[str] = field(default_factory=list)
+    country: str = ""
+    kind: str = ""
+    classifications: list[str] = field(default_factory=list)
+
+    @property
+    def url(self) -> str:
+        return f"https://worldwide.espacenet.com/patent/search?q=pn%3D{self.number}"
+
+    def brief(self) -> dict[str, Any]:
+        return {
+            "number": self.number,
+            "title": self.title,
+            "year": self.year,
+            "inventors": self.inventors,
+            "country": self.country,
+            "kind": self.kind,
+            "classifications": self.classifications,
+            "url": self.url,
+        }
 
 
 @dataclass
@@ -148,5 +195,5 @@ class Lab:
             "score": round(self.score, 2),
             "why": self.why,
             "top_papers": [p.brief() for p in self.papers[:max_papers]],
-            "grants": [asdict(g) | {"url": g.url} for g in self.grants],
+            "grants": [g.brief() for g in self.grants],
         }

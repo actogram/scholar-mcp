@@ -2,10 +2,10 @@ import json
 
 from openpyxl import load_workbook
 
-from actogram_scholar.export import to_csv, to_html, to_json, to_xlsx
-from actogram_scholar.labs import build
-from actogram_scholar.models import Author, Organization, Paper
-from actogram_scholar.pipeline import Result
+from labscout.export import to_csv, to_html, to_json, to_xlsx
+from labscout.labs import build
+from labscout.models import Author, Organization, Paper
+from labscout.pipeline import Result
 
 ORG = Organization(
     name="Uni <X> & Co",
@@ -47,7 +47,7 @@ def test_xlsx_has_labs_papers_and_about(tmp_path):
     labs = wb["Labs"]
     assert labs["B2"].value == "Ola Nordmann" and labs["D2"].value == "Uni <X> & Co"
     assert wb["Papers"]["H2"].hyperlink.target == "https://pubmed.ncbi.nlm.nih.gov/123/"
-    assert wb.properties.creator == "Actogram Scholar"
+    assert wb.properties.creator == "Actogram LabScout"
 
 
 def test_html_escapes_text_and_keeps_the_data_readable(tmp_path):

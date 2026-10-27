@@ -1,4 +1,4 @@
-from actogram_scholar.text import (
+from labscout.text import (
     clean_affiliation,
     country_from_text,
     name_key,

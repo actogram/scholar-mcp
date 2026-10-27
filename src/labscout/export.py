@@ -132,7 +132,7 @@ def to_xlsx(result: Result, path: str | Path) -> Path:
 
     path = Path(path)
     wb = Workbook()
-    wb.properties.creator = wb.properties.lastModifiedBy = "Actogram Scholar"
+    wb.properties.creator = wb.properties.lastModifiedBy = "Actogram LabScout"
     wb.properties.title = f"Labs for: {result.query}"
     for name, columns, rows in (("Labs", LAB_COLUMNS, lab_rows(result)), ("Papers", PAPER_COLUMNS, paper_rows(result))):
         ws = wb.active if name == "Labs" else wb.create_sheet(name)
@@ -164,7 +164,7 @@ def to_xlsx(result: Result, path: str | Path) -> Path:
         ["Sources searched", ", ".join(result.sources)],
         ["Counts", ", ".join(f"{k}: {v}" for k, v in result.counts.items())],
         ["Created", result.created],
-        ["Tool", f"Actogram Scholar {result.version}, https://github.com/actogram/scholar-mcp"],
+        ["Tool", f"Actogram LabScout {result.version}, https://github.com/actogram/scholar-mcp"],
         ["Notes", SOURCES_NOTE],
     ):
         about.append(line)
@@ -177,24 +177,52 @@ def to_xlsx(result: Result, path: str | Path) -> Path:
     return path
 
 
-def to_html(result: Result, path: str | Path, top: int = 200) -> Path:
-    path = Path(path)
+def render_html(result: Result, top: int = 200, toolbar: str = "") -> str:
+    """The report page as text; `toolbar` is HTML placed under the title (the web page puts its links there)."""
     data = result.summary(top=top, papers_per_lab=5)
     payload = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
     e = html.escape
     years = " to ".join(str(y) for y in (result.start, result.end) if y) or "all years"
-    page = (
-        TEMPLATE.replace("{{TITLE}}", e(f"Labs for: {result.query}"))
-        .replace("{{QUERY}}", e(result.query))
-        .replace("{{YEARS}}", e(years))
-        .replace("{{COUNTS}}", e(", ".join(f"{k}: {v}" for k, v in result.counts.items())))
-        .replace("{{CREATED}}", e(result.created))
-        .replace("{{NOTE}}", e(SOURCES_NOTE))
-        .replace("{{VERSION}}", e(result.version))
-        .replace("{{DATA}}", payload)
-    )
-    path.write_text(page, encoding="utf-8")
+    counts = ", ".join(f"{k}: {v}" for k, v in result.counts.items())
+    values = {
+        "{{TITLE}}": e(f"Labs for: {result.query}"),
+        "{{QUERY}}": e(result.query),
+        "{{YEARS}}": e(years),
+        "{{COUNTS}}": e(counts),
+        "{{CREATED}}": e(result.created),
+        "{{NOTE}}": e(SOURCES_NOTE),
+        "{{VERSION}}": e(result.version),
+        "{{TOOLBAR}}": toolbar,
+    }
+    page = TEMPLATE
+    for k, v in values.items():
+        page = page.replace(k, v)
+    return page.replace("{{DATA}}", payload)
+
+
+def to_html(result: Result, path: str | Path, top: int = 200) -> Path:
+    path = Path(path)
+    path.write_text(render_html(result, top), encoding="utf-8")
     return path
+
+
+def xlsx_bytes(result: Result) -> bytes:
+    import io
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as tmp:
+        out = to_xlsx(result, Path(tmp) / "labs.xlsx")
+        return io.BytesIO(out.read_bytes()).getvalue()
+
+
+def csv_text(result: Result) -> str:
+    import io
+
+    buf = io.StringIO()
+    w = csv.DictWriter(buf, fieldnames=LAB_COLUMNS)
+    w.writeheader()
+    w.writerows(lab_rows(result))
+    return buf.getvalue()
 
 
 TEMPLATE = """<!doctype html>
@@ -213,6 +241,7 @@ header, main, footer { max-width:1200px; margin:0 auto; padding:0 20px; }
 header { padding-top:28px; }
 h1 { font-size:28px; line-height:1.2; margin:0 0 6px; }
 .meta { color:var(--soft); font-size:15px; margin:0 0 18px; }
+.tools { display:flex; flex-wrap:wrap; gap:8px 16px; margin:-6px 0 18px; font-size:15px; }
 #map { height:420px; border:1px solid var(--line); border-radius:12px; margin:0 0 18px; }
 .bar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:0 0 10px; }
 .bar input { flex:1 1 260px; padding:9px 12px; font:inherit; border:1px solid var(--line); border-radius:8px; }
@@ -235,6 +264,7 @@ footer { color:var(--soft); font-size:13.5px; padding-top:18px; padding-bottom:2
 <header>
   <h1>Labs for: {{QUERY}}</h1>
   <p class="meta">{{YEARS}}. {{COUNTS}}. Created {{CREATED}}.</p>
+  {{TOOLBAR}}
 </header>
 <main>
   <div id="map" role="img" aria-label="Map of the labs that have a known place"></div>
@@ -247,7 +277,7 @@ footer { color:var(--soft); font-size:13.5px; padding-top:18px; padding-bottom:2
     <tbody></tbody>
   </table></div>
 </main>
-<footer><p>{{NOTE}}</p><p>Map tiles: &copy; OpenStreetMap contributors. Made with Actogram Scholar {{VERSION}},
+<footer><p>{{NOTE}}</p><p>Map tiles: &copy; OpenStreetMap contributors. Made with Actogram LabScout {{VERSION}},
   <a href="https://github.com/actogram/scholar-mcp">github.com/actogram/scholar-mcp</a>.</p></footer>
 <script type="application/json" id="data">{{DATA}}</script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"

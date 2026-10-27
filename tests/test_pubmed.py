@@ -1,6 +1,6 @@
 from conftest import FakeHttp, fixture_json, fixture_text
 
-from actogram_scholar.sources import pubmed
+from labscout.sources import pubmed
 
 
 def test_parse_records(pubmed_papers):
@@ -32,7 +32,7 @@ def test_search_sends_tool_and_email_and_fetches_by_post():
     papers = pubmed.search(http, "actigraphy sleep regularity", 2025, 2025, limit=3)
     assert len(papers) == 3
     method, _, params = http.calls[0]
-    assert method == "GET" and params["tool"] == "actogram-scholar" and params["email"] == "test@example.org"
+    assert method == "GET" and params["tool"] == "labscout" and params["email"] == "test@example.org"
     assert "(2025:2025[dp])" in params["term"]
     method, _, data = http.calls[1]
     assert method == "POST" and data["id"] == "40903419,41205918,41345970"

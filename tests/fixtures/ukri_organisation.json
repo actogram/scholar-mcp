@@ -1,0 +1,35 @@
+{
+ "ext": null,
+ "id": "BFE41CB6-4B8A-4082-B96B-3DFEFE793924",
+ "outcomeid": null,
+ "href": "http://gtr.ukri.org/gtr/api/organisations/BFE41CB6-4B8A-4082-B96B-3DFEFE793924",
+ "created": 1704709544000,
+ "updated": null,
+ "name": "UNIVERSITY COLLEGE LONDON",
+ "regNumber": null,
+ "website": null,
+ "addresses": {
+  "address": [
+   {
+    "links": null,
+    "ext": null,
+    "id": "AE8CFC59-9D80-4939-9DD2-B84B9439EFE3",
+    "outcomeid": null,
+    "href": null,
+    "created": 1788431758000,
+    "updated": null,
+    "line1": null,
+    "line2": null,
+    "line3": null,
+    "line4": null,
+    "line5": null,
+    "city": null,
+    "county": null,
+    "postCode": "WC1E 6BT",
+    "region": "London",
+    "country": null,
+    "type": "MAIN_ADDRESS"
+   }
+  ]
+ }
+}

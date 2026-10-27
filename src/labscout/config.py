@@ -20,13 +20,13 @@ class Settings:
 
     @classmethod
     def from_env(cls) -> Settings:
-        """SCHOLAR_EMAIL, NCBI_API_KEY and SCHOLAR_CACHE_DIR (an empty value switches the cache off)."""
-        cache = os.environ.get("SCHOLAR_CACHE_DIR")
+        """LABSCOUT_EMAIL, NCBI_API_KEY and LABSCOUT_CACHE_DIR (an empty value switches the cache off)."""
+        cache = os.environ.get("LABSCOUT_CACHE_DIR")
         if cache is None:
             base = Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache")
-            cache = str(base / "actogram-scholar")
+            cache = str(base / "labscout")
         return cls(
-            email=os.environ.get("SCHOLAR_EMAIL", "").strip(),
+            email=os.environ.get("LABSCOUT_EMAIL", "").strip(),
             ncbi_api_key=os.environ.get("NCBI_API_KEY", "").strip(),
             cache_dir=Path(cache) if cache else None,
         )
@@ -34,4 +34,4 @@ class Settings:
     @property
     def user_agent(self) -> str:
         contact = f"; mailto:{self.email}" if self.email else ""
-        return f"actogram-scholar/{__version__} (+{REPO}{contact})"
+        return f"labscout/{__version__} (+{REPO}{contact})"

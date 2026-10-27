@@ -1,5 +1,5 @@
-from actogram_scholar.models import Author, Paper
-from actogram_scholar.pipeline import merge, split_name
+from labscout.models import Author, Paper
+from labscout.pipeline import merge, split_name
 
 
 def test_merge_by_pmid_doi_and_title():
@@ -40,8 +40,8 @@ def test_split_name():
 def test_a_broken_source_is_skipped_but_a_bad_search_is_reported(monkeypatch):
     import pytest
 
-    from actogram_scholar import pipeline
-    from actogram_scholar.errors import SearchError
+    from labscout import pipeline
+    from labscout.errors import SearchError
 
     def broken(*a, **k):
         raise ValueError("not JSON")
