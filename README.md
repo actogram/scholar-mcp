@@ -6,8 +6,9 @@ LabScout searches public sources, groups the papers by their senior author and o
 why each lab came up: how many papers on the topic it led, in which years, with what kind of data and which species.
 It also finds grants, registered trials and patents on a topic. You can use it in three ways:
 
-- **on the web page:** type a topic, get a map, a table and an Excel file;
-- **from an AI assistant**, as an MCP server;
+- **on the web page** at [actogram-labscout.hf.space](https://actogram-labscout.hf.space): type a topic, get a map, a
+  table and an Excel file;
+- **from an AI assistant**, as an MCP server at `https://actogram-labscout.hf.space/mcp`;
 - **from the command line** or your own Python code.
 
 It grew out of [pubmed2worldmap](https://github.com/timpyrkov/pubmed2worldmap) by Tim Pyrkov, and is part of
@@ -46,6 +47,8 @@ pip install -e ".[dev]"
 
 ## The web page
 
+The hosted page is at https://actogram-labscout.hf.space. To run it on your own computer:
+
 ```bash
 labscout serve                     # http://127.0.0.1:8000, with the MCP server at /mcp
 ```
@@ -71,7 +74,7 @@ Most MCP clients take a configuration like this:
 }
 ```
 
-A hosted LabScout works the same way: add its `/mcp` address as a custom connector.
+The hosted LabScout works the same way: add `https://actogram-labscout.hf.space/mcp` as a custom connector.
 
 The tools, all read-only:
 
