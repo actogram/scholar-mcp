@@ -16,7 +16,7 @@ def _paper_text(p: Paper) -> str:
     return " ".join([p.title, p.abstract, " ".join(p.keywords), " ".join(p.mesh)])
 
 
-def _lead_affiliation(p: Paper) -> tuple[Author | None, str]:
+def lead_affiliation(p: Paper) -> tuple[Author | None, str]:
     """The senior author and the affiliation to place the lab with. Older PubMed records list an affiliation only for
     the first author; then the lab is placed with that one."""
     if not p.authors:
@@ -32,20 +32,23 @@ def build(papers: list[Paper], resolve: Resolve, query: str = "", top: int | Non
     terms = query_terms(query)
     groups: dict[tuple[str, str], list[tuple[Paper, Author, Organization]]] = defaultdict(list)
     for p in papers:
-        lead, aff = _lead_affiliation(p)
+        lead, aff = lead_affiliation(p)
         if lead is None:
             continue
         org = resolve(aff) if aff else None
         org = org or Organization(name=aff.split(",")[0].strip() if aff else "Unknown organisation", match="")
         place = org.ror or fold(org.name)
         groups[(lead.key, place)].append((p, lead, org))
-    groups = _join_same_city(groups)
+    groups = _join_same_person(groups)
 
-    # how often each person appears on the papers in any position, for "also co-author of"
-    anywhere: Counter[str] = Counter()
+    # where each name appears on the papers in any position, for "also co-author of"
+    appearances: dict[str, list[tuple[Paper, Author]]] = defaultdict(list)
     for p in papers:
-        for k in {a.key for a in p.authors}:
-            anywhere[k] += 1
+        seen: set[str] = set()
+        for a in p.authors:
+            if a.key not in seen:
+                seen.add(a.key)
+                appearances[a.key].append((p, a))
 
     labs = []
     this_year = date.today().year
@@ -61,7 +64,7 @@ def build(papers: list[Paper], resolve: Resolve, query: str = "", top: int | Non
         matched = [t for t in terms if t in fold(text)]
         funders = [f for f, _ in Counter(f for p in lab_papers for f in p.funders).most_common(8)]
         senior = len(lab_papers)
-        other = max(0, anywhere[key] - senior)
+        other = _coauthored(appearances[key], items, org)
         recent = bool(years) and max(years) >= this_year - 2
         score = 3 * senior + other + (2 if recent else 0) + 0.5 * len(signals) + 0.5 * len(matched)
         if any(p.has_data_links for p in lab_papers):
@@ -92,9 +95,31 @@ def build(papers: list[Paper], resolve: Resolve, query: str = "", top: int | Non
     return labs[:top] if top else labs
 
 
-def _join_same_city(groups: dict[tuple[str, str], list]) -> dict[tuple[str, str], list]:
-    """One person at two organisations in the same city (a university and its hospital) is one lab; the organisation
-    with more papers names it. The same name in different cities stays apart: it may be two people."""
+def _coauthored(appearances: list[tuple[Paper, Author]], items: list, org: Organization) -> int:
+    """Papers the lab's lead co-authored, counted only where the co-author is clearly the same person: the same ORCID
+    iD, or an affiliation naming the lab's city or organisation. A common name such as "Li J" is many people, so a bare
+    name does not count."""
+    led = {id(t[0]) for t in items}
+    orcids = {t[1].orcid for t in items if t[1].orcid}
+    own = {fold(t[1].affiliations[0]) for t in items if t[1].affiliations}
+    marks = [fold(x) for x in (org.city, org.name) if x and len(x) >= 4]
+    n = 0
+    for p, a in appearances:
+        if id(p) in led:
+            continue
+        if a.orcid and a.orcid in orcids:
+            n += 1
+            continue
+        text = fold(" ".join(a.affiliations))
+        if text and (any(m in text for m in marks) or any(o and o == fold(x) for o in own for x in a.affiliations)):
+            n += 1
+    return n
+
+
+def _join_same_person(groups: dict[tuple[str, str], list]) -> dict[tuple[str, str], list]:
+    """One person at two organisations is one lab when it is clearly the same person: the same city (a university and
+    its hospital) or the same ORCID iD. The organisation of the most recent paper names the lab. The same name in
+    different cities without a shared ORCID iD stays apart: it may be two people."""
     by_person: dict[str, list[tuple[str, str]]] = defaultdict(list)
     for key in groups:
         by_person[key[0]].append(key)
@@ -104,11 +129,13 @@ def _join_same_city(groups: dict[tuple[str, str], list]) -> dict[tuple[str, str]
         keys.sort(key=lambda k: -len(groups[k]))
         for k in keys[1:]:
             org = groups[k][0][2]
+            ids = {t[1].orcid for t in groups[k] if t[1].orcid}
             for main in keys:
                 if main == k or main not in groups:
                     continue
                 morg = groups[main][0][2]
                 same = org.city and morg.city and fold(org.city) == fold(morg.city) and org.country == morg.country
+                same = same or bool(ids & {t[1].orcid for t in groups[main] if t[1].orcid})
                 if same and len(groups[main]) >= len(groups[k]):
                     groups[main] += groups.pop(k)
                     break

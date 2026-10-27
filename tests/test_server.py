@@ -23,8 +23,8 @@ def test_find_labs_returns_the_summary(monkeypatch):
     papers = [Paper(title="T", year=2025, authors=[Author("Nordmann", "Ola", affiliations=["x"])])]
     seen = {}
 
-    def fake(topic, start, end, limit, sources, top=None, grants=0):
-        seen.update(topic=topic, limit=limit, sources=sources, grants=grants)
+    def fake(topic, start, end, limit, sources, top=None, grants=0, order="relevance"):
+        seen.update(topic=topic, limit=limit, sources=sources, grants=grants, order=order)
         return Result(
             query=topic,
             start=start,
@@ -36,9 +36,24 @@ def test_find_labs_returns_the_summary(monkeypatch):
         )
 
     monkeypatch.setattr(server, "_find_labs", fake)
-    out = anyio.run(lambda: server.find_labs("sleep", max_papers=5000, sources=["pubmed", "nope"]))
+    out = anyio.run(lambda: server.find_labs("sleep", max_papers=5000, sources=["pubmed", "nope"], order="odd"))
     assert out["labs"][0]["lead"] == "Ola Nordmann"
     assert seen["limit"] == 1000 and seen["sources"] == ["pubmed"] and seen["grants"] == 0
+    assert seen["order"] == "relevance"  # an unknown order falls back to the default
+
+
+def test_search_papers_reads_in_the_asked_order_and_says_what_was_found(monkeypatch):
+    seen = {}
+
+    def fake_collect(http, topic, start, end, limit, sources, order="relevance", info=None, progress=None):
+        seen.update(order=order)
+        info.update(found={"pubmed": 4200}, failed=[])
+        return [Paper(title="T", year=2025, pmid="1", authors=[Author("Lee", "Kim")])], {"pubmed": 1, "papers": 1}
+
+    monkeypatch.setattr(server, "collect", fake_collect)
+    out = anyio.run(lambda: server.search_papers("sleep", order="newest"))
+    assert seen["order"] == "newest" and out["found"] == {"pubmed": 4200}
+    assert out["papers"][0]["senior_author"] == "Kim Lee"
 
 
 def test_a_source_outage_becomes_a_message(monkeypatch):
@@ -51,3 +66,8 @@ def test_a_source_outage_becomes_a_message(monkeypatch):
     monkeypatch.setattr(server.patents, "search", down)
     out = anyio.run(lambda: server.find_patents("sleep"))
     assert out["error"].startswith("www.ebi.ac.uk is not answering right now (HTTP 503)")
+
+
+def test_a_search_that_cannot_be_read_becomes_a_message():
+    out = anyio.run(lambda: server.find_labs('"sleep regularity'))
+    assert out["error"].startswith("The search has a quote mark without its pair")

@@ -12,7 +12,7 @@ from . import __version__
 from .errors import SearchError
 from .export import to_csv, to_html, to_json, to_xlsx
 from .http import Http
-from .pipeline import collect, find_labs, profile, split_name
+from .pipeline import ORDERS, collect, find_labs, profile, split_name
 from .sources import PUBLICATION_SOURCES, clinicaltrials, nih_reporter, patents, ukri
 
 
@@ -29,6 +29,15 @@ def _years(p: argparse.ArgumentParser) -> None:
     p.add_argument("--to", dest="end", type=int, help="last publication year")
 
 
+def _order(p: argparse.ArgumentParser) -> None:
+    p.add_argument(
+        "--order",
+        choices=ORDERS,
+        default="relevance",
+        help="read the most relevant papers (PubMed's best matches, Europe PMC's most cited; default) or the newest",
+    )
+
+
 def parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(prog="labscout", description="Find the labs, people and studies behind a topic.")
     ap.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
@@ -38,6 +47,7 @@ def parser() -> argparse.ArgumentParser:
     p = sub.add_parser("labs", help="labs working on a topic, ranked, with the reason each one came up")
     p.add_argument("topic")
     _years(p)
+    _order(p)
     p.add_argument("--max", type=int, default=200, help="papers to read from each source (default 200)")
     p.add_argument("--top", type=int, default=25, help="labs to print (default 25; files get all labs)")
     p.add_argument(
@@ -50,6 +60,7 @@ def parser() -> argparse.ArgumentParser:
     p = sub.add_parser("papers", help="papers on a topic, merged across sources")
     p.add_argument("topic")
     _years(p)
+    _order(p)
     p.add_argument("--max", type=int, default=25)
     p.add_argument("--sources", type=_sources, default=list(PUBLICATION_SOURCES))
     p.add_argument("--json", action="store_true", help="print JSON")
@@ -110,7 +121,7 @@ def main(argv: list[str] | None = None) -> int:
         run(http=args.http, host=args.host, port=args.port)
         return 0
     if args.command == "labs":
-        res = find_labs(args.topic, args.start, args.end, args.max, args.sources, grants=args.grants)
+        res = find_labs(args.topic, args.start, args.end, args.max, args.sources, grants=args.grants, order=args.order)
         print(
             f"{res.counts.get('papers', 0)} papers, {len(res.labs)} labs "
             f"({', '.join(f'{k} {v}' for k, v in res.counts.items() if k in PUBLICATION_SOURCES)})"
@@ -127,7 +138,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.command == "papers":
         with Http() as http:
-            papers, counts = collect(http, args.topic, args.start, args.end, args.max, args.sources)
+            papers, counts = collect(http, args.topic, args.start, args.end, args.max, args.sources, args.order)
         papers.sort(key=lambda p: -(p.year or 0))
         if args.json:
             print(

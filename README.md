@@ -53,9 +53,11 @@ The hosted page is at https://actogram-labscout.hf.space. To run it on your own 
 labscout serve                     # http://127.0.0.1:8000, with the MCP server at /mcp
 ```
 
-Type a topic and press **Find labs**. A new topic takes 30 to 90 seconds; the page shows how long it has been
-searching and refreshes by itself. The report has a map of the labs with a known place, a table you can sort and filter
-with the papers behind each lab, and downloads as Excel, CSV and JSON.
+Type a topic and press **Find labs**. A new topic takes about a minute; the page shows each step of the search and
+refreshes by itself. The report says how many papers the sources have and how many were read, gives a hint when the
+search is very broad or very narrow, and has charts of labs by country and papers by year, a map of the labs with a
+known place, a table you can sort and filter with the papers behind each lab, and downloads as Excel, CSV and JSON.
+The start page explains the steps and gives search tips.
 
 ## From an AI assistant (MCP)
 
@@ -81,7 +83,7 @@ The tools, all read-only:
 | Tool | What it does |
 |---|---|
 | `find_labs` | labs working on a topic, ranked, with the reason each one came up; optional NIH grants |
-| `search_papers` | papers on a topic from PubMed and Europe PMC, with species and data hints |
+| `search_papers` | papers on a topic from PubMed and Europe PMC, the most relevant or the newest, with species and data hints |
 | `lab_profile` | one researcher: organisations, years, co-authors, topics, recent papers, NIH grants |
 | `find_grants` | funded projects from NIH RePORTER and UKRI Gateway to Research |
 | `find_trials` | registered studies on ClinicalTrials.gov with investigators and sites |
@@ -92,6 +94,7 @@ The tools, all read-only:
 ```bash
 labscout labs "actigraphy sleep regularity older adults" --from 2020 --xlsx labs.xlsx --html labs.html
 labscout labs "circadian rhythm shift work" --from 2022 --grants 5      # NIH grants for the five top labs
+labscout labs "chronotype[tiab] adolescents" --from 2021 --order newest # the newest papers instead
 labscout papers "wearable step counts circadian" --max 20
 labscout profile "Susan Redline" --topic "sleep regularity"
 labscout grants --pi "Susan Redline"                                     # NIH RePORTER
@@ -100,8 +103,9 @@ labscout trials "actigraphy sleep"
 labscout patents "actigraphy AND sleep"
 ```
 
-Searches use PubMed syntax, so `actigraphy AND "sleep regularity"` and field tags such as `[tiab]` work. Each source
-gives at most `--max` papers, newest first.
+Searches use PubMed syntax, so `actigraphy AND "sleep regularity"`, `OR`, `NOT` and field tags such as `[tiab]` work;
+LabScout puts them in Europe PMC's terms for that source. Each source gives at most `--max` papers: by default PubMed's
+best matches and the most cited on Europe PMC, with `--order newest` the newest.
 
 ## Settings
 
@@ -114,6 +118,7 @@ gives at most `--max` papers, newest first.
 | `LABSCOUT_SEARCHES_PER_HOUR` | searches one visitor of the web page can start in an hour (default 20) |
 | `LABSCOUT_PARALLEL_SEARCHES` | searches the web page runs at the same time (default 2) |
 | `LABSCOUT_ALLOWED_HOSTS` | host names the MCP endpoint answers for, besides localhost (Hugging Face sets `SPACE_HOST` itself) |
+| `LABSCOUT_HIDE` | people who asked not to be shown, as ORCID iDs or names separated by `;` (a name hides everyone with that last name and first initial) |
 
 ## Host it
 
@@ -131,23 +136,26 @@ and the MCP endpoint (`https://<space>.hf.space/mcp`) then run together.
 
 ## How a lab is found
 
-1. Papers on the topic come from PubMed and Europe PMC and are merged by PMID, DOI or title and year.
+1. Papers on the topic come from PubMed (its Best Match order) and Europe PMC (titles and abstracts, most cited first;
+   its own relevance order is mostly by date), or the newest of both, and are merged by PMID, DOI or title and year.
 2. The senior (last) author of each paper leads its lab. Older PubMed records list only the first author's
    affiliation; then the lab is placed with that one.
 3. The affiliation is matched to an organisation in ROR. A match is accepted only when ROR is confident, or when a
    name search finds an organisation whose name words all appear in the affiliation and whose country agrees. Otherwise
    only the country is taken from the text. The column `match` (`ror`, `ror-name` or `text`) shows which.
-4. One person at two organisations in the same city, such as a university and its hospital, is one lab. The same name
-   in different cities stays apart, because it may be two people.
+4. One person at two organisations is one lab when it is clearly the same person: the same city, such as a university
+   and its hospital, or the same ORCID iD. Otherwise the same name stays apart, because it may be two people.
 5. Labs are ranked by papers led, papers co-authored, recent work, the kinds of data mentioned and the search words
-   found.
+   found. A co-authored paper counts only when the co-author is clearly the same person: the same ORCID iD, or the
+   lab's city or organisation in the affiliation.
 
 ## Privacy and fair use
 
 LabScout shows information that researchers have made public in their work: names, affiliations, publications, grants,
 patents and registered studies. It removes e-mail addresses from affiliations and never returns them. Use the results to
 find research and collaborators, not to judge people. Organisation matching is automatic and can be wrong, so check
-before you act on a result.
+before you act on a result. The web page has a privacy notice at `/privacy`; people who ask not to be shown are hidden
+with `LABSCOUT_HIDE`.
 
 ## Development
 

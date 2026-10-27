@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import threading
 import time
 from pathlib import Path
 from typing import Any
@@ -29,6 +30,11 @@ PACE = {
 RETRY_STATUS = {429, 500, 502, 503, 504}
 CACHE_DAYS = 7
 
+# The earliest moment the next request to a host may start, shared by every client in this process: searches running
+# side by side (on the web page and from assistants) share a source's limit instead of each using it in full.
+_NEXT: dict[str, float] = {}
+_NEXT_LOCK = threading.Lock()
+
 
 class Http:
     def __init__(
@@ -44,7 +50,6 @@ class Http:
         self._pace = dict(PACE) if pace else {}
         if pace and self.settings.ncbi_api_key:
             self._pace["eutils.ncbi.nlm.nih.gov"] = 0.11
-        self._last: dict[str, float] = {}
 
     def close(self) -> None:
         self._client.close()
@@ -113,11 +118,12 @@ class Http:
         gap = self._pace.get(host, 0.0)
         if not gap:
             return
-        last = self._last.get(host, 0.0)
-        now = time.monotonic()
-        if now - last < gap:
-            time.sleep(gap - (now - last))
-        self._last[host] = time.monotonic()
+        with _NEXT_LOCK:
+            now = time.monotonic()
+            start = max(now, _NEXT.get(host, 0.0))
+            _NEXT[host] = start + gap
+        if start > now:
+            time.sleep(start - now)
 
     @staticmethod
     def _key(method: str, url: str, params: Any, data: Any, json_body: Any, headers: Any = None) -> str:
