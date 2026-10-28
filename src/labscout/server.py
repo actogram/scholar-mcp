@@ -82,7 +82,7 @@ async def find_labs(
     topic: str,
     from_year: int | None = None,
     to_year: int | None = None,
-    max_papers: int = 200,
+    max_papers: int = 1000,
     top: int = 20,
     sources: list[str] | None = None,
     with_grants: bool = False,
@@ -92,8 +92,9 @@ async def find_labs(
 
     topic: search words, PubMed style ("actigraphy AND sleep regularity" works).
     from_year, to_year: limit the publication years; the last five years find the labs active now.
-    max_papers: papers read per source (up to 1000). order: "relevance" reads the most relevant papers (default),
-    "newest" the newest. top: labs returned (up to 100). sources: "pubmed", "europepmc" or both (default both).
+    max_papers: papers read per source (default 1000, up to 10000; more papers find smaller labs further down the
+    list). order: "relevance" reads the most relevant papers (default), "newest" the newest.
+    top: labs returned (up to 100). sources: "pubmed", "europepmc" or both (default both).
     with_grants: also look up NIH grants for the five top labs (slower).
     The answer says how many papers each source has for the search ("found") and how many were read ("counts").
     """
@@ -103,7 +104,7 @@ async def find_labs(
             topic,
             from_year,
             to_year,
-            _clip(max_papers, 10, 1000),
+            _clip(max_papers, 10, 10000),
             _sources(sources),
             top=_clip(top, 1, 100),
             grants=5 if with_grants else 0,

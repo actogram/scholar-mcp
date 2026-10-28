@@ -7,6 +7,7 @@ import os
 import re
 import threading
 from collections.abc import Callable, Iterable
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any
@@ -131,23 +132,30 @@ def collect(
     failed: list[str] = info.setdefault("failed", [])
     papers: list[Paper] = []
     counts: dict[str, int] = {}
-    for src in sources:
-        name = LABELS.get(src, src)
+    srcs = list(sources)
+    for src in srcs:
+        if src not in ("pubmed", "europepmc"):
+            raise SearchError(f"unknown source {src!r}; use one of {', '.join(PUBLICATION_SOURCES)}")
+
+    def run(src: str) -> tuple[list[Paper], dict[str, Any], bool]:
         if progress:
-            progress(src, f"Searching {name}")
+            progress(src, f"Searching {LABELS.get(src, src)}")
         meta: dict[str, Any] = {}
         try:
-            if src == "pubmed":
-                found = pubmed.search(http, query, start, end, limit, sort=order, info=meta)
-            elif src == "europepmc":
-                found = europepmc.search(http, query, start, end, limit, sort=order, info=meta)
-            else:
-                raise SearchError(f"unknown source {src!r}; use one of {', '.join(PUBLICATION_SOURCES)}")
+            fn = pubmed.search if src == "pubmed" else europepmc.search
+            return fn(http, query, start, end, limit, sort=order, info=meta), meta, False
         except SearchError:
             raise
         except Exception as err:  # one source being down should not stop the others
             log.warning("%s failed: %s", src, err)
-            found = []
+            return [], meta, True
+
+    # the sources answer side by side: a big search takes as long as the slower source, not the sum of both
+    with ThreadPoolExecutor(max_workers=max(1, len(srcs))) as pool:
+        answers = list(pool.map(run, srcs))
+    for src, (found, meta, down) in zip(srcs, answers, strict=True):
+        name = LABELS.get(src, src)
+        if down:
             failed.append(src)
         counts[src] = len(found)
         if "total" in meta:
@@ -155,13 +163,13 @@ def collect(
         if meta.get("translation"):
             info["translation"] = meta["translation"]
         if progress:
-            if src in failed:
+            if down:
                 progress(src, f"{name} did not answer; going on without it")
             else:
                 which = read_as(src, order)
                 hits = found_by.get(src, len(found))
                 progress(
-                    src, f"{name}: {hits:,} {'paper' if hits == 1 else 'papers'} found, read the {len(found)} {which}"
+                    src, f"{name}: {hits:,} {'paper' if hits == 1 else 'papers'} found, read the {len(found):,} {which}"
                 )
         papers += found
     merged = merge(papers)

@@ -10,12 +10,14 @@ https://ror.readme.io/docs/rest-api
 from __future__ import annotations
 
 import logging
+import os
 import re
 from typing import Any
 
 from ..http import Http
 from ..models import Organization
 from ..text import clean_affiliation, country_from_text, country_name, fold, significant
+from . import ror_local
 
 log = logging.getLogger(__name__)
 
@@ -83,6 +85,9 @@ class Resolver:
     def __init__(self, http: Http) -> None:
         self.http = http
         self.memo: dict[str, Organization | None] = {}
+        self.local = ror_local.load()
+        # with the local copy the API only gets the few affiliations it could not place, so a big search stays fast
+        self.api_left = int(os.environ.get("LABSCOUT_ROR_API_BUDGET", "20")) if self.local else -1
 
     def __call__(self, affiliation: str) -> Organization | None:
         aff = clean_affiliation(affiliation)
@@ -104,6 +109,13 @@ class Resolver:
 
     def _resolve(self, aff: str) -> Organization | None:
         country = country_from_text(aff)
+        if self.local:
+            org = self.local.match(aff, country)
+            if org:
+                return org
+            if self.api_left == 0:
+                return self._text_only(aff, country)
+            self.api_left -= 1
         data = self.http.get_json(API, {"affiliation": aff})
         for item in data.get("items", []):
             if item.get("chosen"):
@@ -114,6 +126,10 @@ class Resolver:
             for org in (data.get("items") or [])[:3]:
                 if _fits(org, aff, country):
                     return _organization(org, "ror-name")
+        return self._text_only(aff, country)
+
+    @staticmethod
+    def _text_only(aff: str, country: str) -> Organization | None:
         if country:
             name = _segments(aff)[0] if _segments(aff) else aff.split(",")[0]
             return Organization(name=name, country=country, country_name=country_name(country), match="text")

@@ -92,6 +92,10 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument("--host", default="127.0.0.1")
     p.add_argument("--port", type=int, default=8000)
 
+    p = sub.add_parser("ror-index", help="build the local copy of the ROR registry (set LABSCOUT_ROR_INDEX to use it)")
+    p.add_argument("out", help="file to write, for example ror_index.json.gz")
+    p.add_argument("--source", default="", help="a ROR data dump zip (default: the newest one on Zenodo)")
+
     p = sub.add_parser("mcp", help="run the MCP server for AI assistants")
     p.add_argument("--http", action="store_true", help="serve Streamable HTTP instead of stdio")
     p.add_argument("--host", default="127.0.0.1")
@@ -114,6 +118,11 @@ def main(argv: list[str] | None = None) -> int:
         from .web import run as serve
 
         serve(host=args.host, port=args.port)
+        return 0
+    if args.command == "ror-index":
+        from .sources import ror_local
+
+        print(f"{ror_local.build(args.out, args.source):,} organisations written to {args.out}")
         return 0
     if args.command == "mcp":
         from .server import run

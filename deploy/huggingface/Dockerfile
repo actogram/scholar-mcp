@@ -4,13 +4,16 @@ FROM python:3.12-slim
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
-    LABSCOUT_CACHE_DIR=/tmp/labscout-cache
+    LABSCOUT_CACHE_DIR=/tmp/labscout-cache \
+    LABSCOUT_ROR_INDEX=/home/user/app/ror_index.json.gz
 
 RUN useradd -m -u 1000 user
 WORKDIR /home/user/app
 COPY --chown=user pyproject.toml README.md LICENSE ./
 COPY --chown=user src ./src
 RUN pip install --no-cache-dir .
+# the ROR registry in memory: organisations are matched without one API request per paper
+RUN labscout ror-index /home/user/app/ror_index.json.gz && chown user /home/user/app/ror_index.json.gz
 
 USER user
 EXPOSE 7860
