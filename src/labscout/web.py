@@ -139,8 +139,22 @@ def _work(key: str, topic: str, start: int | None, end: int | None, sources: lis
 
     def progress(step: str, text: str) -> None:
         with _lock:
-            if key in _jobs:
-                _jobs[key]["steps"][step] = text
+            job = _jobs.get(key)
+            if job is None:
+                return
+            if step != "note":
+                job["steps"][step] = text
+            last = job["log"][-1][1] if job["log"] else ""
+            moving = (step == "organisations" and last.startswith("Matching")) or (
+                text.endswith("records read")
+                and last.endswith("records read")
+                and last.split(":")[0] == text.split(":")[0]
+            )
+            if moving:  # one moving line instead of hundreds
+                job["log"][-1] = (job["log"][-1][0], text)
+            else:
+                job["log"].append((round(time.time() - job["started"], 1), text))
+                del job["log"][:-60]
 
     try:
         if not SEARCH_SLOTS.acquire(blocking=False):
@@ -219,14 +233,16 @@ async def search(request: Request) -> Response:
                 status=429,
             )
         with _lock:
-            job = _jobs.setdefault(key, {"started": time.time(), "steps": {}, "sources": sources})
+            job = _jobs.setdefault(key, {"started": time.time(), "steps": {}, "log": [], "sources": sources})
         threading.Thread(target=_work, args=(key, topic, start, end, sources, order), daemon=True).start()
     with _lock:
         steps = _steps(job)
+        lines = list(job.get("log", []))
     waited = int(time.time() - job["started"])
-    body = WAIT.format(topic=html.escape(topic), steps=steps, waited=waited)
+    trail = "".join(f'<li><span class="t">{t:.0f} s</span>{html.escape(text)}</li>' for t, text in reversed(lines))
+    body = WAIT.format(topic=html.escape(topic), steps=steps, waited=waited, trail=trail or "<li>Starting</li>")
     resp = _page(body, title="Searching | Actogram LabScout")
-    resp.headers["Refresh"] = "4"
+    resp.headers["Refresh"] = "2"
     return resp
 
 
@@ -349,6 +365,11 @@ ul.plain li { margin:0 0 8px; }
 .steps li.now { font-weight:600; }
 .steps li.now::before { border-color:var(--green); border-top-color:transparent; animation:spin 1s linear infinite; }
 .steps li.todo { color:var(--soft); }
+.trail { list-style:none; margin:10px 0 22px; padding:12px 14px; border:1px solid var(--line); border-radius:10px;
+  font-size:14.5px; line-height:1.45; max-height:420px; overflow:auto; display:grid; gap:6px; }
+.trail li { overflow-wrap:anywhere; }
+.trail li:first-child { font-weight:600; }
+.trail .t { display:inline-block; min-width:44px; color:var(--soft); font-variant-numeric:tabular-nums; }
 @keyframes spin { to { transform:rotate(360deg); } }
 @media (prefers-reduced-motion:reduce) { .steps li.now::before { animation:none; border-top-color:var(--green); } }
 .err { padding:12px 14px; border-radius:10px; background:#fdeeee; color:#7a1f1f; margin:0 0 16px; }
@@ -468,10 +489,12 @@ FORM = """<div class="hero">
 FORM_ERROR = '<p class="err">{msg}</p><p><a href="./">Back to the search</a></p>'
 
 WAIT = """<h1>Searching for <span>{topic}</span></h1>
-<p class="lead">A new topic takes about a minute. This page follows the search and shows the report when it is
-  ready.</p>
+<p class="lead">Most topics take under a minute, a very broad one two or three. This page follows the search and
+  shows the report when it is ready.</p>
 {steps}
 <p class="note">{waited} seconds so far.</p>
+<h2>What LabScout is doing</h2>
+<ol class="trail" aria-live="polite">{trail}</ol>
 <p><a href="./">Back to the search</a></p>"""
 
 PRIVACY = """<h1>Privacy</h1>

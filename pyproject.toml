@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "labscout"
-version = "0.4.0"
+version = "0.4.1"
 description = "LabScout finds the labs, people, grants, trials and patents behind a research topic from public sources, as a web page, a command line tool and an MCP server."
 readme = "README.md"
 license = "MIT"

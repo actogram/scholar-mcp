@@ -57,7 +57,7 @@ def _search(client, **params):
         r = client.get("/search", params=params)
         if "Searching for" not in r.text:
             return r
-        assert r.headers.get("refresh") == "4"
+        assert r.headers.get("refresh") == "2"
         time.sleep(0.05)
     raise AssertionError("the search did not finish")
 

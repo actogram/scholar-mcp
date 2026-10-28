@@ -8,9 +8,13 @@ from __future__ import annotations
 
 import logging
 import re
+import time
 import xml.etree.ElementTree as ET
+from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date
+
+import httpx
 
 from ..errors import SearchError
 from ..http import Http
@@ -87,17 +91,44 @@ def search_ids(
     return ids[:limit]
 
 
-def fetch(http: Http, ids: list[str], batch: int = 200, workers: int = 0) -> list[Paper]:
-    """Records for the ids, in their order. Batches go out side by side (4 with an API key, 2 without); the shared
+def fetch(
+    http: Http, ids: list[str], batch: int = 200, workers: int = 0, progress: Callable[[str], None] | None = None
+) -> list[Paper]:
+    """Records for the ids, in their order. Batches go out side by side (6 with an API key, 2 without); the shared
     pacing in Http still keeps the requests within NCBI's limit, so this only overlaps the waiting for answers."""
     chunks = [ids[i : i + batch] for i in range(0, len(ids), batch)]
     if not chunks:
         return []
 
-    def one(chunk: list[str]) -> list[Paper]:
-        return parse(http.post_form_text(f"{BASE}/efetch.fcgi", _params(http, id=",".join(chunk), retmode="xml")))
+    done = [0]
 
-    n = workers or (4 if http.settings.ncbi_api_key else 2)
+    def get(chunk: list[str], tries: int = 3) -> list[Paper]:
+        """One batch; a refused batch is tried again and then split, so one bad answer loses no records."""
+        for attempt in range(tries):
+            try:
+                return parse(
+                    http.post_form_text(f"{BASE}/efetch.fcgi", _params(http, id=",".join(chunk), retmode="xml"))
+                )
+            except (httpx.HTTPStatusError, ET.ParseError) as err:
+                log.warning("PubMed refused a batch of %s records (%s), trying again", len(chunk), err)
+                time.sleep(1 + attempt)
+        if len(chunk) == 1:
+            log.warning("PubMed record %s could not be read; skipped", chunk[0])
+            return []
+        half = len(chunk) // 2
+        return get(chunk[:half], 2) + get(chunk[half:], 2)
+
+    def one(chunk: list[str]) -> list[Paper]:
+        got = get(chunk)
+        done[0] += len(chunk)
+        if progress and len(chunks) > 1:
+            progress(f"PubMed: {done[0]:,} of {len(ids):,} records read")
+        return got
+
+    n = workers or (6 if http.settings.ncbi_api_key else 2)
+    if progress and len(chunks) > 1:
+        side = min(n, len(chunks))
+        progress(f"PubMed: reading {len(ids):,} records in {len(chunks)} batches of {batch}, {side} at a time")
     if n == 1 or len(chunks) == 1:
         return [p for c in chunks for p in one(c)]
     with ThreadPoolExecutor(max_workers=n) as pool:
@@ -112,8 +143,15 @@ def search(
     limit: int = 300,
     sort: str = "newest",
     info: dict[str, object] | None = None,
+    progress: Callable[[str], None] | None = None,
 ) -> list[Paper]:
-    return fetch(http, search_ids(http, query, start, end, limit, sort, info))
+    meta: dict[str, object] = {} if info is None else info
+    ids = search_ids(http, query, start, end, limit, sort, meta)
+    if progress:
+        if meta.get("translation"):
+            progress(f"PubMed read the search as: {str(meta['translation'])[:240]}")
+        progress(f"PubMed has {int(meta.get('total', 0)):,} papers; LabScout takes {len(ids):,} of them")
+    return fetch(http, ids, progress=progress)
 
 
 # ---- parsing --------------------------------------------------------------------------------------------------------

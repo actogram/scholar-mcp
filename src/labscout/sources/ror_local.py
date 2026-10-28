@@ -15,13 +15,14 @@ import io
 import json
 import logging
 import os
+import re
 import urllib.request
 import zipfile
 from functools import lru_cache
 from typing import Any
 
 from ..models import Organization
-from ..text import fold, significant
+from ..text import _countries, fold, significant
 
 log = logging.getLogger(__name__)
 
@@ -88,6 +89,7 @@ class LocalRor:
         names: list[tuple[frozenset[str], int, str]] = []
         for i, r in enumerate(self.rows):
             for label in r[2]:
+                label = re.sub(r"\s*\([^)]*\)\s*$", "", label)  # "CJ America (United States)": the country is a note
                 need = frozenset(significant(label))
                 if need:
                     names.append((need, i, fold(label).strip()))
@@ -99,7 +101,10 @@ class LocalRor:
         self.exact = {fold(a).strip(): i for i, r in enumerate(self.rows) for a in r[3] if len(a) >= 4}
 
     def match(self, affiliation: str, country: str) -> Organization | None:
-        parts = [p.strip(" .") for p in affiliation.replace(";", ",").split(",") if p.strip(" .")]
+        countries = _countries()
+        parts = [p.strip(" .-") for p in affiliation.replace(";", ",").split(",") if p.strip(" .-")]
+        # a part that only names a country ("United States of America") is a place, never an organisation
+        parts = [p for p in parts if fold(p) not in countries]
         segs = [significant(p) for p in parts]
         folded = {fold(p) for p in parts}
         have = set().union(*segs) if segs else set()

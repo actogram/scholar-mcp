@@ -12,6 +12,7 @@ from __future__ import annotations
 import logging
 import os
 import re
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
 from ..http import Http
@@ -85,6 +86,7 @@ class Resolver:
     def __init__(self, http: Http) -> None:
         self.http = http
         self.memo: dict[str, Organization | None] = {}
+        self.texts: dict[str, str] = {}  # the affiliation as written, for each memo key
         self.local = ror_local.load()
         # with the local copy the API only gets the few affiliations it could not place, so a big search stays fast
         self.api_left = int(os.environ.get("LABSCOUT_ROR_API_BUDGET", "20")) if self.local else -1
@@ -95,6 +97,7 @@ class Resolver:
             return None
         key = fold(aff)
         if key not in self.memo:
+            self.texts[key] = aff
             try:
                 self.memo[key] = self._resolve(aff)
             except Exception as err:  # ROR busy or down: keep the country from the text and go on
@@ -107,6 +110,41 @@ class Resolver:
                 )
         return self.memo[key]
 
+    def prefetch(self, affiliations: list[str]) -> None:
+        """Places all affiliations of a search at once: the local copy first, then the misses that the API budget
+        allows side by side (the shared pacing keeps them within ROR's limit), the rest by their country."""
+        if not self.local:
+            return
+        misses = []
+        for raw in affiliations:
+            aff = clean_affiliation(raw)
+            key = fold(aff)
+            if not aff or key in self.memo:
+                continue
+            self.texts[key] = aff
+            country = country_from_text(aff)
+            org = self.local.match(aff, country)
+            if org:
+                self.memo[key] = org
+            else:
+                self.memo[key] = self._text_only(aff, country)
+                misses.append((key, aff, country))
+        ask = misses[: max(self.api_left, 0)]
+        self.api_left = 0
+        if ask:
+
+            def one(item: tuple[str, str, str]) -> tuple[str, Organization | None]:
+                key, aff, country = item
+                try:
+                    return key, self._api(aff, country)
+                except Exception as err:
+                    log.warning("ROR lookup failed (%s); using the text of the affiliation", err)
+                    return key, self._text_only(aff, country)
+
+            with ThreadPoolExecutor(max_workers=6) as pool:
+                for key, org in pool.map(one, ask):
+                    self.memo[key] = org
+
     def _resolve(self, aff: str) -> Organization | None:
         country = country_from_text(aff)
         if self.local:
@@ -116,6 +154,9 @@ class Resolver:
             if self.api_left == 0:
                 return self._text_only(aff, country)
             self.api_left -= 1
+        return self._api(aff, country)
+
+    def _api(self, aff: str, country: str) -> Organization | None:
         data = self.http.get_json(API, {"affiliation": aff})
         for item in data.get("items", []):
             if item.get("chosen"):
