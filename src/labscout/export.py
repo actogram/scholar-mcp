@@ -206,7 +206,7 @@ def overview(result: Result) -> list[str]:
         said = " and ".join(f"{name} has {n:,}" for name, n in have)
         out.append(f"{years_text(result)}: {said} {'paper' if have[-1][1] == 1 else 'papers'} for this search.")
     read = [
-        f"the {result.counts.get(s, 0)} {read_as(s, result.order)} from {LABELS.get(s, s)}"
+        f"the {result.counts.get(s, 0):,} {read_as(s, result.order)} from {LABELS.get(s, s)}"
         for s in result.sources
         if s not in result.failed
     ]

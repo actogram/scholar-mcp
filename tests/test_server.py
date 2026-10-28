@@ -36,9 +36,9 @@ def test_find_labs_returns_the_summary(monkeypatch):
         )
 
     monkeypatch.setattr(server, "_find_labs", fake)
-    out = anyio.run(lambda: server.find_labs("sleep", max_papers=5000, sources=["pubmed", "nope"], order="odd"))
+    out = anyio.run(lambda: server.find_labs("sleep", max_papers=50000, sources=["pubmed", "nope"], order="odd"))
     assert out["labs"][0]["lead"] == "Ola Nordmann"
-    assert seen["limit"] == 1000 and seen["sources"] == ["pubmed"] and seen["grants"] == 0
+    assert seen["limit"] == 10000 and seen["sources"] == ["pubmed"] and seen["grants"] == 0
     assert seen["order"] == "relevance"  # an unknown order falls back to the default
 
 

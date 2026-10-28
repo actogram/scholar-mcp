@@ -9,6 +9,7 @@ from __future__ import annotations
 import logging
 import re
 import xml.etree.ElementTree as ET
+from concurrent.futures import ThreadPoolExecutor
 from datetime import date
 
 from ..errors import SearchError
@@ -86,13 +87,21 @@ def search_ids(
     return ids[:limit]
 
 
-def fetch(http: Http, ids: list[str], batch: int = 200) -> list[Paper]:
-    papers: list[Paper] = []
-    for i in range(0, len(ids), batch):
-        chunk = ids[i : i + batch]
-        xml = http.post_form_text(f"{BASE}/efetch.fcgi", _params(http, id=",".join(chunk), retmode="xml"))
-        papers += parse(xml)
-    return papers
+def fetch(http: Http, ids: list[str], batch: int = 200, workers: int = 0) -> list[Paper]:
+    """Records for the ids, in their order. Batches go out side by side (4 with an API key, 2 without); the shared
+    pacing in Http still keeps the requests within NCBI's limit, so this only overlaps the waiting for answers."""
+    chunks = [ids[i : i + batch] for i in range(0, len(ids), batch)]
+    if not chunks:
+        return []
+
+    def one(chunk: list[str]) -> list[Paper]:
+        return parse(http.post_form_text(f"{BASE}/efetch.fcgi", _params(http, id=",".join(chunk), retmode="xml")))
+
+    n = workers or (4 if http.settings.ncbi_api_key else 2)
+    if n == 1 or len(chunks) == 1:
+        return [p for c in chunks for p in one(c)]
+    with ThreadPoolExecutor(max_workers=n) as pool:
+        return [p for part in pool.map(one, chunks) for p in part]
 
 
 def search(

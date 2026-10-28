@@ -39,7 +39,7 @@ from .pipeline import ORDERS, SEARCH_SLOTS, Result, find_labs
 from .server import mcp
 from .sources import PUBLICATION_SOURCES
 
-MAX_PAPERS = int(os.environ.get("LABSCOUT_WEB_MAX_PAPERS", "100"))  # per source, for one search on the page
+MAX_PAPERS = int(os.environ.get("LABSCOUT_WEB_MAX_PAPERS", "10000"))  # per source, for one search on the page
 PER_HOUR = int(os.environ.get("LABSCOUT_SEARCHES_PER_HOUR", "20"))  # per visitor
 KEEP = 50  # recent results kept in memory for the download links
 log = logging.getLogger(__name__)
@@ -117,7 +117,7 @@ async def home(request: Request) -> HTMLResponse:
     for k, v in {
         "{{MCP}}": html.escape(f"{base}/mcp"),
         "{{REPO}}": REPO,
-        "{{MAX}}": str(MAX_PAPERS),
+        "{{MAX}}": f"{MAX_PAPERS:,}",
         "{{FROM}}": since,
         "{{EXAMPLES}}": examples,
         "{{ART}}": art.HERO,
@@ -402,7 +402,8 @@ FORM = """<div class="hero">
     </fieldset>
   </div>
   <button type="submit">Find labs</button>
-  <p class="wait">Starting the search. The next page shows each step; a new topic takes about a minute.</p>
+  <p class="wait">Starting the search. The next page shows each step; most topics take under a minute, a very broad one
+    with thousands of papers two or three.</p>
   <p class="note">LabScout reads up to {{MAX}} papers from each source: PubMed's best matches and the most cited on
     Europe PMC, or the newest. The last five years show the labs that are active now; clear the year to search all
     years.</p>

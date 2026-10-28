@@ -114,7 +114,9 @@ best matches and the most cited on Europe PMC, with `--order newest` the newest.
 | `LABSCOUT_EMAIL` | your contact address, sent to NCBI and in the User-Agent as their policies ask (recommended) |
 | `NCBI_API_KEY` | an [NCBI API key](https://support.nlm.nih.gov/kbArticle/?pn=KA-05317) for faster PubMed searches |
 | `LABSCOUT_CACHE_DIR` | where the cache lives (default `~/.cache/labscout`); an empty value switches it off |
-| `LABSCOUT_WEB_MAX_PAPERS` | papers per source for one search on the web page (default 100) |
+| `LABSCOUT_WEB_MAX_PAPERS` | papers per source for one search on the web page (default 10000) |
+| `LABSCOUT_ROR_INDEX` | a local copy of the ROR registry, made with `labscout ror-index ror_index.json.gz`; organisations are then matched in memory, which makes big searches many times faster |
+| `LABSCOUT_ROR_API_BUDGET` | with the local copy, how many affiliations of one search may still go to the ROR API (default 20) |
 | `LABSCOUT_SEARCHES_PER_HOUR` | searches one visitor of the web page can start in an hour (default 20) |
 | `LABSCOUT_PARALLEL_SEARCHES` | searches the web page runs at the same time (default 2) |
 | `LABSCOUT_ALLOWED_HOSTS` | host names the MCP endpoint answers for, besides localhost (Hugging Face sets `SPACE_HOST` itself) |

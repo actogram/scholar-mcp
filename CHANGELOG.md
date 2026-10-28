@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.4.0 (2026-10-28)
+
+- Full searches. The web page reads all papers a search finds, up to 10,000 from each source instead of 100, and the
+  `find_labs` tool reads 1,000 by default and up to 10,000. More papers find the smaller labs further down the list.
+- Much faster. Affiliations are matched to organisations with a local copy of the ROR registry (built from ROR's CC0
+  data dump with `labscout ror-index`, used when `LABSCOUT_ROR_INDEX` names it), so a search no longer waits for one
+  request per paper; the ROR API only gets the few affiliations the local copy cannot place. A name counts only when
+  all its words stand in one part of the affiliation, and names made of general words such as "Department of Public
+  Health" are not taken. PubMed and Europe PMC are searched side by side, and PubMed records are fetched in parallel
+  batches within NCBI's limit (10 requests a second with an API key). A search of 500 papers took 160 s and now takes
+  about 25 s; one of 14,500 papers takes about two minutes.
+- The Docker image builds the ROR index and the Space uses an NCBI API key.
+
 ## 0.3.0 (2026-10-27)
 
 - Better searches. LabScout now reads the most relevant papers instead of the newest: PubMed's Best Match and the
