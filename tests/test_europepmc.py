@@ -1,3 +1,5 @@
+import re
+
 from conftest import FakeHttp, fixture_json
 
 from labscout.sources import europepmc
@@ -14,20 +16,26 @@ def test_parse_result(epmc_papers):
 def test_search_pages_with_the_cursor_and_stops():
     page = fixture_json("europepmc_search.json")
     http = FakeHttp(
-        {"europepmc": lambda url, params: page if params["cursorMark"] == "*" else {"resultList": {"result": []}}}
+        {
+            "europepmc": lambda url, params: (
+                page if params.get("cursorMark", "*") == "*" else {"resultList": {"result": []}}
+            )
+        }
     )
     papers = europepmc.search(http, "actigraphy", 2025, 2025, limit=10)
     assert len(papers) == 3
     assert "PUB_YEAR:[2025 TO 2025]" in http.calls[0][2]["query"]
-    assert len(http.calls) == 2  # the second page is empty, so the search stops
+    assert len(http.calls) == 3  # the count, then the pages; the second page is empty, so the search stops
 
 
 def test_relevance_uses_europe_pmc_order_and_reports_the_hits():
     page = fixture_json("europepmc_search.json") | {"hitCount": 1577}
-    http = FakeHttp({"europepmc": lambda url, params: page if params["cursorMark"] == "*" else {"resultList": {}}})
+    http = FakeHttp(
+        {"europepmc": lambda url, params: page if params.get("cursorMark", "*") == "*" else {"resultList": {}}}
+    )
     info = {}
     europepmc.search(http, "actigraphy", 2021, None, limit=3, sort="relevance", info=info)
-    assert http.calls[0][2]["sort"] == "CITED desc" and info == {"total": 1577}
+    assert http.calls[1][2]["sort"] == "CITED desc" and info == {"total": 1577}
     assert http.calls[0][2]["query"].startswith("(TITLE_ABS:(actigraphy)) AND (PUB_YEAR:[2021 TO ")
     europepmc.search(http, "actigraphy", limit=3)
     assert http.calls[-1][2]["sort"] == "P_PDATE_D desc"
@@ -50,3 +58,29 @@ def test_empty_values_in_a_record_are_dropped():
     }
     p = europepmc.parse_result(raw)
     assert p.mesh == ["Sleep"] and p.keywords == ["actigraphy"]
+
+
+def test_a_search_read_in_full_goes_by_year_ranges_side_by_side():
+    page = fixture_json("europepmc_search.json")
+
+    def answer(url, params):
+        q = params["query"]
+        years = re.search(r"PUB_YEAR:\[(\d+) TO (\d+)\]", q)
+        a, b = int(years.group(1)), int(years.group(2))
+        if params["resultType"] == "idlist":
+            return {"hitCount": 500 * (b - a + 1)}
+        return page if params["cursorMark"] == "*" else {"resultList": {"result": []}}
+
+    http = FakeHttp({"europepmc": answer})
+    notes = []
+    info = {}
+    papers = europepmc.search(http, "actigraphy", 2021, 2025, limit=10000, info=info, progress=notes.append)
+    read = sorted(
+        {
+            re.search(r"PUB_YEAR:\[(\d+ TO \d+)\]", c[2]["query"]).group(1)
+            for c in http.calls
+            if c[2]["resultType"] == "core"
+        }
+    )
+    assert info["total"] == 2500 and read == ["2021 TO 2023", "2024 TO 2025"]
+    assert len(papers) == 6 and "2 year ranges side by side" in notes[0]

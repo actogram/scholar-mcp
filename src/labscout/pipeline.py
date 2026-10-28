@@ -143,7 +143,8 @@ def collect(
         meta: dict[str, Any] = {}
         try:
             fn = pubmed.search if src == "pubmed" else europepmc.search
-            return fn(http, query, start, end, limit, sort=order, info=meta), meta, False
+            note = (lambda text: progress("note", text)) if progress else None
+            return fn(http, query, start, end, limit, sort=order, info=meta, progress=note), meta, False
         except SearchError:
             raise
         except Exception as err:  # one source being down should not stop the others
@@ -174,6 +175,13 @@ def collect(
         papers += found
     merged = merge(papers)
     counts["papers"] = len(merged)
+    if progress and len(srcs) > 1:
+        both = len(papers) - len(merged)
+        progress(
+            "note",
+            f"{len(papers):,} records from both sources; {both:,} are the same paper in both (same PMID, "
+            f"DOI or title), so {len(merged):,} different papers",
+        )
     return merged, counts
 
 
@@ -234,6 +242,8 @@ def find_labs(
         info: dict[str, Any] = {}
         papers, counts = collect(http, query, start, end, limit, srcs, order, info, progress)
         resolve = Resolver(http)
+        if hasattr(resolve, "prefetch"):
+            resolve.prefetch([a for a in (lead_affiliation(p)[1] for p in papers) if a])
         if progress:
             total = sum(1 for p in papers if lead_affiliation(p)[1])
             done = 0
@@ -247,11 +257,39 @@ def find_labs(
 
             progress("organisations", f"Matching organisations: 0 of {total} papers")
         labs = build(papers, counted if progress else resolve, query=query)
+        if progress and hasattr(resolve, "memo"):
+            kinds: dict[str, int] = {}
+            for org in resolve.memo.values():
+                k = (org.match if org else "") or "none"
+                kinds[k] = kinds.get(k, 0) + 1
+            local = kinds.get("ror-local", 0)
+            api = kinds.get("ror", 0) + kinds.get("ror-name", 0)
+            progress(
+                "note",
+                f"{len(resolve.memo):,} different affiliations: {local:,} found in the copy of the ROR "
+                f"registry, {api:,} checked with the ROR API, {kinds.get('text', 0):,} placed only by their "
+                f"country, {kinds.get('none', 0):,} without a place",
+            )
+            examples = [
+                (resolve.texts.get(k, k), o)
+                for k, o in resolve.memo.items()
+                if o and o.match == "ror-local" and len(k) < 110
+            ][:3]
+            for a, o in examples:
+                progress("note", f"for example \u201c{a}\u201d is {o.name} ({o.city or o.country})")
         orcids, names = hidden_people()
         labs = [lab for lab in labs if lab.lead_key not in names and not (lab.orcid and lab.orcid in orcids)]
         counts["labs"] = len(labs)
         if progress:
-            progress("labs", f"Ranking {len(labs)} labs and drawing the map")
+            progress("labs", f"Ranking {len(labs):,} labs and drawing the map")
+            joined = sum(1 for lab in labs if lab.orcid)
+            progress(
+                "note",
+                f"Papers grouped by their last author and place: {len(labs):,} labs, {joined:,} of them "
+                "with an ORCID iD that ties the same person across cities",
+            )
+            for i, lab in enumerate(labs[:3], 1):
+                progress("note", f"#{i} {lab.lead}, {lab.organization.name}: {len(lab.papers)} papers on the topic")
         if top:
             labs = labs[:top]
         for lab in labs[:grants]:

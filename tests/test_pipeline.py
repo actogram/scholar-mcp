@@ -68,7 +68,7 @@ def test_collect_tells_what_was_found_and_which_source_failed(monkeypatch):
     from labscout import pipeline
     from labscout.errors import SearchError
 
-    def pm(http, query, start, end, limit, sort="newest", info=None):
+    def pm(http, query, start, end, limit, sort="newest", info=None, progress=None):
         info.update(total=4200, translation="sleep[All Fields]")
         return [Paper(title="A paper", year=2025, pmid="9")]
 

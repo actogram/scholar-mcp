@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.1 (2026-10-28)
+
+- While a search runs, the page shows what LabScout is doing, step by step: how PubMed read the search, how many
+  records each source has and how they are read, how many papers both sources share, how the affiliations were
+  placed (with examples) and the first labs. Europe PMC is read in year ranges side by side when the whole result is
+  read, the ROR API checks of a search run side by side, a part of an affiliation that only names a country is not
+  taken for an organisation, and a refused PubMed batch is tried again instead of losing the source. A search of
+  14,500 records now takes about 40 seconds.
+
 ## 0.4.0 (2026-10-28)
 
 - Full searches. The web page reads all papers a search finds, up to 10,000 from each source instead of 100, and the
